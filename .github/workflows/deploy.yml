@@ -23,6 +23,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
+      - run: cp -R pages/.github dist/
       - uses: peaceiris/actions-gh-pages@v4
         with:
           deploy_key: ${{ secrets.SITE_DEPLOY_KEY }}
@@ -30,3 +31,4 @@ jobs:
           publish_branch: main
           publish_dir: dist
           force_orphan: true
+          exclude_assets: ''
