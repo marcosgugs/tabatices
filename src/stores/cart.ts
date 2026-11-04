@@ -7,6 +7,7 @@ const storageKey = 'tabatices:cart'
 
 export const useCartStore = defineStore('cart', () => {
   const items = ref<CartItem[]>(readStorage<CartItem[]>(storageKey, []))
+  const isDrawerOpen = ref(false)
 
   const itemCount = computed(() => items.value.reduce((total, item) => total + item.quantity, 0))
   const subtotal = computed(() =>
@@ -43,7 +44,15 @@ export const useCartStore = defineStore('cart', () => {
     items.value = []
   }
 
+  function openDrawer(): void {
+    isDrawerOpen.value = true
+  }
+
+  function closeDrawer(): void {
+    isDrawerOpen.value = false
+  }
+
   watch(items, (storedItems) => writeStorage(storageKey, storedItems), { deep: true })
 
-  return { items, itemCount, subtotal, addItem, updateQuantity, removeItem, clear }
+  return { items, itemCount, subtotal, isDrawerOpen, addItem, updateQuantity, removeItem, clear, openDrawer, closeDrawer }
 })

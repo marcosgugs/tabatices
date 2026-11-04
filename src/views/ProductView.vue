@@ -28,7 +28,6 @@ interface GalleryItem {
 
 const selectedPaper = ref('')
 const quantity = ref(1)
-const wasAdded = ref(false)
 const activeView = ref<GalleryView>('cover')
 const magnifierZoom = ref<MagnifierZoom | null>(null)
 
@@ -77,7 +76,6 @@ watch(
 
     selectedPaper.value = currentProduct.paperOptions[0]?.label ?? ''
     quantity.value = 1
-    wasAdded.value = false
     activeView.value = 'cover'
   },
   { immediate: true },
@@ -99,7 +97,7 @@ function addToCart(): void {
     quantity: quantity.value,
   })
 
-  wasAdded.value = true
+  cartStore.openDrawer()
 }
 </script>
 
@@ -200,19 +198,8 @@ function addToCart(): void {
 
           <div class="flex flex-wrap items-center gap-3">
             <QuantityStepper v-model="quantity" />
-            <button type="submit" class="button-primary h-12 flex-1 sm:flex-none sm:px-10">Adicionar à sacola</button>
+            <button type="submit" class="button-primary h-12 flex-1 sm:flex-none sm:px-10">Adicionar ao carrinho</button>
           </div>
-
-          <Transition name="added">
-            <div
-              v-if="wasAdded"
-              class="flex items-center justify-between gap-4 rounded-2xl bg-forest/[0.06] px-5 py-4 text-[15px]"
-              role="status"
-            >
-              <span class="text-ink">Adicionado à sacola.</span>
-              <RouterLink :to="{ name: 'cart' }" class="link-accent">Ver sacola ›</RouterLink>
-            </div>
-          </Transition>
         </form>
 
         <div class="mt-12 border-t border-line pt-8">
@@ -259,16 +246,5 @@ function addToCart(): void {
 .gallery-enter-from,
 .gallery-leave-to {
   opacity: 0;
-}
-
-.added-enter-active {
-  transition:
-    opacity 0.35s var(--ease-apple),
-    transform 0.35s var(--ease-apple);
-}
-
-.added-enter-from {
-  opacity: 0;
-  transform: translateY(-6px);
 }
 </style>

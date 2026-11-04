@@ -11,7 +11,7 @@ const orderSteps = [
   },
   {
     title: 'Finalize o pedido',
-    description: 'Revise sua sacola, informe o endereço e envie. A gente confirma tudo com você.',
+    description: 'Revise seu carrinho, informe o endereço e envie. A gente confirma tudo com você.',
   },
   {
     title: 'Pague com tranquilidade',

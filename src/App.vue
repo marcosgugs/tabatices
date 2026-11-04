@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import AppHeader from '@/components/AppHeader.vue'
 import AppFooter from '@/components/AppFooter.vue'
+import CartDrawer from '@/components/CartDrawer.vue'
 </script>
 
 <template>
@@ -14,6 +15,7 @@ import AppFooter from '@/components/AppFooter.vue'
       </RouterView>
     </main>
     <AppFooter />
+    <CartDrawer />
   </div>
 </template>
 

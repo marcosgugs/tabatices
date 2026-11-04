@@ -3,7 +3,8 @@ import { storeToRefs } from 'pinia'
 import { useCartStore } from '@/stores/cart'
 import { publicAsset } from '@/composables/usePublicAsset'
 
-const { itemCount } = storeToRefs(useCartStore())
+const cartStore = useCartStore()
+const { itemCount } = storeToRefs(cartStore)
 </script>
 
 <template>
@@ -23,14 +24,17 @@ const { itemCount } = storeToRefs(useCartStore())
         <RouterLink :to="{ name: 'home', hash: '#como-funciona' }" class="hidden transition-colors hover:text-ink sm:block">
           Como funciona
         </RouterLink>
-        <RouterLink
-          :to="{ name: 'cart' }"
+        <button
+          type="button"
           class="relative flex size-10 items-center justify-center rounded-full transition-colors hover:bg-forest/5"
-          :aria-label="`Sacola com ${itemCount} ${itemCount === 1 ? 'item' : 'itens'}`"
+          :aria-label="`Carrinho com ${itemCount} ${itemCount === 1 ? 'item' : 'itens'}`"
+          aria-haspopup="dialog"
+          @click="cartStore.openDrawer"
         >
           <svg viewBox="0 0 24 24" class="size-[22px] text-forest" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
-            <path d="M5 8h14l-1.2 11.1a2 2 0 0 1-2 1.9H8.2a2 2 0 0 1-2-1.9L5 8Z" stroke-linejoin="round" />
-            <path d="M9 10V7a3 3 0 0 1 6 0v3" stroke-linecap="round" />
+            <path d="M3 4h2.2l2.3 11.1a1.5 1.5 0 0 0 1.5 1.2h8.4a1.5 1.5 0 0 0 1.5-1.1L20.5 8H6.1" stroke-linecap="round" stroke-linejoin="round" />
+            <circle cx="9.5" cy="20" r="1.3" />
+            <circle cx="17" cy="20" r="1.3" />
           </svg>
           <Transition name="badge">
             <span
@@ -40,7 +44,7 @@ const { itemCount } = storeToRefs(useCartStore())
               {{ itemCount }}
             </span>
           </Transition>
-        </RouterLink>
+        </button>
       </div>
     </nav>
   </header>

@@ -8,7 +8,7 @@ import { formatCurrency } from '@/composables/useCurrency'
 import { formatCep, useDeliveryLookup } from '@/composables/useDeliveryLookup'
 import { getShippingFee } from '@/composables/useShippingRate'
 import { buildOrderMessage, buildWhatsappUrl, deliveryLabels, generateOrderCode } from '@/composables/useWhatsappCheckout'
-import QuantityStepper from '@/components/QuantityStepper.vue'
+import CartLineItem from '@/components/CartLineItem.vue'
 import IconWhatsapp from '@/components/IconWhatsapp.vue'
 import { publicAsset } from '@/composables/usePublicAsset'
 import type { DeliveryMethod, ShippingAddress } from '@/types/cart'
@@ -166,7 +166,7 @@ function checkout(): void {
 
 <template>
   <div class="mx-auto max-w-6xl px-5 pt-10 sm:px-8 lg:pt-16">
-    <h1 class="text-4xl font-semibold tracking-[-0.025em] text-forest sm:text-5xl">Sua sacola.</h1>
+    <h1 class="text-4xl font-semibold tracking-[-0.025em] text-forest sm:text-5xl">Seu carrinho.</h1>
 
     <div v-if="justPlacedOrder" class="mt-16 flex flex-col items-center rounded-[32px] bg-white/60 px-6 py-20 text-center" role="status">
       <img :src="publicAsset('apple-touch-icon.png')" alt="" width="96" height="96" class="size-24 rounded-full" />
@@ -184,39 +184,14 @@ function checkout(): void {
 
     <div v-else-if="items.length === 0" class="mt-16 flex flex-col items-center rounded-[32px] bg-white/60 px-6 py-20 text-center">
       <img :src="publicAsset('apple-touch-icon.png')" alt="" width="96" height="96" class="size-24 rounded-full" />
-      <p class="mt-6 text-xl font-semibold tracking-tight text-ink">Sua sacola está vazia.</p>
+      <p class="mt-6 text-xl font-semibold tracking-tight text-ink">Seu carrinho está vazio.</p>
       <p class="mt-2 text-ink-muted">Que tal escolher uma capa que combine com você?</p>
       <RouterLink :to="{ name: 'home', hash: '#cadernos' }" class="button-primary mt-8">Ver cadernos</RouterLink>
     </div>
 
     <div v-else class="mt-10 grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:gap-14">
       <ul class="divide-y divide-line border-y border-line">
-        <li v-for="item in items" :key="item.id" class="flex gap-5 py-6">
-          <RouterLink :to="{ name: 'product', params: { slug: item.slug } }" class="shrink-0">
-            <img :src="item.image" :alt="item.name" width="96" height="120" class="h-30 w-24 rounded-2xl object-cover" />
-          </RouterLink>
-
-          <div class="flex min-w-0 flex-1 flex-col">
-            <div class="flex items-start justify-between gap-4">
-              <div class="min-w-0">
-                <p class="text-lg font-semibold tracking-tight text-ink">{{ item.name }}</p>
-                <p class="mt-1 text-sm text-ink-muted">Miolo {{ item.paper.toLowerCase() }}</p>
-                  </div>
-              <p class="shrink-0 font-medium text-ink">{{ formatCurrency(item.unitPrice * item.quantity) }}</p>
-            </div>
-
-            <div class="mt-auto flex items-center justify-between pt-4">
-              <QuantityStepper
-                :model-value="item.quantity"
-                size="compact"
-                @update:model-value="(quantity: number) => cartStore.updateQuantity(item.id, quantity)"
-              />
-              <button type="button" class="text-sm text-ink-muted transition-colors hover:text-terracotta" @click="cartStore.removeItem(item.id)">
-                Remover
-              </button>
-            </div>
-          </div>
-        </li>
+        <CartLineItem v-for="item in items" :key="item.id" :item="item" />
       </ul>
 
       <aside class="lg:sticky lg:top-24 lg:self-start">

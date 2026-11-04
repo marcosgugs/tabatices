@@ -6,7 +6,8 @@ export const router = createRouter({
   routes: [
     { path: '/', name: 'home', component: HomeView },
     { path: '/produto/:slug', name: 'product', component: () => import('@/views/ProductView.vue') },
-    { path: '/sacola', name: 'cart', component: () => import('@/views/CartView.vue') },
+    { path: '/carrinho', name: 'cart', component: () => import('@/views/CartView.vue') },
+    { path: '/sacola', redirect: { name: 'cart' } },
     { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
   ],
   scrollBehavior(to, _from, savedPosition) {
