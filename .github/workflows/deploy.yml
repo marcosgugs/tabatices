@@ -1,4 +1,4 @@
-name: Deploy site
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -7,13 +7,15 @@ on:
 
 permissions:
   contents: read
+  pages: write
+  id-token: write
 
 concurrency:
-  group: deploy-site
+  group: pages
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,12 +25,18 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - run: cp -R pages/.github dist/
-      - uses: peaceiris/actions-gh-pages@v4
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
-          deploy_key: ${{ secrets.SITE_DEPLOY_KEY }}
-          external_repository: tabataruiz/tabatices
-          publish_branch: main
-          publish_dir: dist
-          force_orphan: true
-          exclude_assets: ''
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
