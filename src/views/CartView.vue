@@ -194,7 +194,7 @@ function checkout(): void {
         <CartLineItem v-for="item in items" :key="item.id" :item="item" />
       </ul>
 
-      <aside class="lg:sticky lg:top-24 lg:self-start">
+      <aside class="min-w-0 lg:sticky lg:top-24 lg:self-start">
         <div class="rounded-[32px] bg-white/70 p-6 sm:p-8">
           <div>
             <label for="customer-name" class="text-[15px] font-semibold text-ink">Seu nome</label>

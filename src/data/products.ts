@@ -36,7 +36,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com uma água-viva cercada por elementos botânicos, em uma composição cheia de detalhes.',
     isInspiredByReference: true,
-    price: 89.9,
+    price: 59.9,
     image: 'images/agua-viva.webp',
     imageAlt: 'Caderno kraft com ilustração de água-viva e bolhas sobre fundo preto, entre ramos de folhas',
     productionDays: 5,
@@ -50,7 +50,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, trazendo uma girafa cheia de personalidade.',
     isInspiredByReference: true,
-    price: 89.9,
+    price: 59.9,
     image: 'images/girafa.webp',
     imageAlt: 'Caderno kraft com ilustração de uma girafa espiando de ponta-cabeça',
     productionDays: 5,
@@ -64,7 +64,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com um farol cercado por ondas e rochas, trazendo um toque náutico cheio de detalhes.',
     isInspiredByReference: true,
-    price: 89.9,
+    price: 59.9,
     image: 'images/farol.webp',
     imageAlt: 'Caderno kraft com ilustração de farol entre ondas agitadas',
     productionDays: 5,
@@ -78,7 +78,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com um tentáculo enrolado em uma âncora entre bolhas e cordas, trazendo um toque náutico misterioso e cheio de detalhes.',
     isInspiredByReference: false,
-    price: 89.9,
+    price: 59.9,
     image: 'images/tentaculo.webp',
     imageAlt: 'Caderno kraft com ilustração de tentáculo enrolado em uma âncora',
     productionDays: 5,
