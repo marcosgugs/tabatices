@@ -1,10 +1,10 @@
-import type { CartItem, DeliveryMethod } from '@/types/cart'
+import type { CartItem } from '@/types/cart'
 
 export interface Order {
   code: string
   createdAt: string
   items: CartItem[]
-  deliveryMethod: DeliveryMethod
+  deliveryLabel: string
   total: number
   message: string
 }

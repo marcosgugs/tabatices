@@ -1,18 +1,21 @@
 import { storeConfig } from '@/config/store'
 import { formatCurrency } from '@/composables/useCurrency'
-import type { CartItem, DeliveryMethod, ShippingAddress } from '@/types/cart'
+import type { CartItem, ShippingAddress, ShippingOption } from '@/types/cart'
 
 interface OrderSummary {
   customerName: string
   items: CartItem[]
   subtotal: number
-  deliveryMethod: DeliveryMethod
-  deliveryFee: number
+  shipping: ShippingOption
   address: ShippingAddress | null
 }
 
-export const deliveryLabels: Record<DeliveryMethod, string> = {
-  correios: 'Frete Correios',
+export function describeShipping(shipping: ShippingOption): string {
+  return `Frete ${shipping.carrier} ${shipping.service}`
+}
+
+export function describeDeliveryTime(deliveryDays: number): string {
+  return `até ${deliveryDays} ${deliveryDays === 1 ? 'dia útil' : 'dias úteis'} após o envio`
 }
 
 export function generateOrderCode(): string {
@@ -33,7 +36,8 @@ export function describeAddress(address: ShippingAddress): string[] {
 }
 
 export function buildOrderMessage(orderCode: string, summary: OrderSummary): string {
-  const total = summary.subtotal + summary.deliveryFee
+  const total = summary.subtotal + summary.shipping.price
+  const deliveryTimeLines = summary.shipping.deliveryDays ? [`Prazo de entrega: ${describeDeliveryTime(summary.shipping.deliveryDays)}`] : []
 
   const lines = [
     `Olá! Quero fazer um pedido na ${storeConfig.name}.`,
@@ -44,7 +48,8 @@ export function buildOrderMessage(orderCode: string, summary: OrderSummary): str
     ...summary.items.map(describeItem),
     '',
     `Subtotal: ${formatCurrency(summary.subtotal)}`,
-    `${deliveryLabels[summary.deliveryMethod]}: ${formatCurrency(summary.deliveryFee)}`,
+    `${describeShipping(summary.shipping)}: ${formatCurrency(summary.shipping.price)}`,
+    ...deliveryTimeLines,
     `*Total: ${formatCurrency(total)}*`,
   ]
 

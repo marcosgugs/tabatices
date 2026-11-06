@@ -6,16 +6,22 @@ import { useOrdersStore } from '@/stores/orders'
 import { storeConfig } from '@/config/store'
 import { formatCurrency } from '@/composables/useCurrency'
 import { formatCep, useDeliveryLookup } from '@/composables/useDeliveryLookup'
-import { getShippingFee } from '@/composables/useShippingRate'
-import { buildOrderMessage, buildWhatsappUrl, deliveryLabels, generateOrderCode } from '@/composables/useWhatsappCheckout'
+import { useShippingQuote } from '@/composables/useShippingQuote'
+import {
+  buildOrderMessage,
+  buildWhatsappUrl,
+  describeDeliveryTime,
+  describeShipping,
+  generateOrderCode,
+} from '@/composables/useWhatsappCheckout'
 import CartLineItem from '@/components/CartLineItem.vue'
 import IconWhatsapp from '@/components/IconWhatsapp.vue'
 import { publicAsset } from '@/composables/usePublicAsset'
-import type { DeliveryMethod, ShippingAddress } from '@/types/cart'
+import type { ShippingAddress } from '@/types/cart'
 import type { Order } from '@/types/order'
 
 interface DeliveryChoice {
-  method: DeliveryMethod
+  id: string
   title: string
   description: string
   priceLabel: string
@@ -26,10 +32,11 @@ const { items, subtotal, itemCount } = storeToRefs(cartStore)
 const ordersStore = useOrdersStore()
 const { orders } = storeToRefs(ordersStore)
 const { address, isLoading, errorMessage, lookup, reset } = useDeliveryLookup()
+const { options: shippingOptions, isLoading: isQuoting, quote: quoteShipping, reset: resetShipping } = useShippingQuote()
 
 const customerName = ref('')
 const cep = ref('')
-const deliveryMethod = ref<DeliveryMethod | null>(null)
+const selectedShippingId = ref<string | null>(null)
 const lastOrder = ref<Order | null>(null)
 
 const shippingAddress = reactive<ShippingAddress>({
@@ -42,25 +49,25 @@ const shippingAddress = reactive<ShippingAddress>({
   state: '',
 })
 
-const shippingFee = computed(() => (address.value ? getShippingFee(address.value.state) : 0))
-
 const deliveryChoices = computed<DeliveryChoice[]>(() => {
   if (!address.value) return []
+  const destination = `${address.value.city}/${address.value.state}`
 
-  return [
-    {
-      method: 'correios',
-      title: 'Correios',
-      description: `Envio para ${address.value.city}/${address.value.state}.`,
-      priceLabel: formatCurrency(shippingFee.value),
-    },
-  ]
+  return shippingOptions.value.map((option) => ({
+    id: option.id,
+    title: `${option.carrier} ${option.service}`,
+    description: option.deliveryDays
+      ? `Entrega em ${describeDeliveryTime(option.deliveryDays)}.`
+      : `Envio para ${destination}.`,
+    priceLabel: formatCurrency(option.price),
+  }))
 })
 
-const deliveryFee = computed(() => (deliveryMethod.value ? shippingFee.value : 0))
+const selectedShipping = computed(() => shippingOptions.value.find((option) => option.id === selectedShippingId.value) ?? null)
+const deliveryFee = computed(() => selectedShipping.value?.price ?? 0)
 const total = computed(() => subtotal.value + deliveryFee.value)
 const pixTotal = computed(() => subtotal.value * (1 - storeConfig.pixDiscountPercent / 100) + deliveryFee.value)
-const requiresAddress = computed(() => deliveryMethod.value !== null)
+const requiresAddress = computed(() => selectedShipping.value !== null)
 
 const isAddressComplete = computed(
   () =>
@@ -70,7 +77,8 @@ const isAddressComplete = computed(
 
 const pendingRequirement = computed(() => {
   if (customerName.value.trim().length < 2) return 'Preencha seu nome.'
-  if (!deliveryMethod.value) return 'Informe seu CEP e escolha a entrega.'
+  if (isQuoting.value) return 'Calculando o frete…'
+  if (!selectedShipping.value) return 'Informe seu CEP e escolha a entrega.'
   if (!isAddressComplete.value) return 'Complete o endereço de entrega.'
   return ''
 })
@@ -80,7 +88,18 @@ const justPlacedOrder = computed(() => (items.value.length === 0 ? lastOrder.val
 const canCheckout = computed(() => items.value.length > 0 && !pendingRequirement.value)
 
 watch(deliveryChoices, (choices) => {
-  deliveryMethod.value = choices.length === 1 ? choices[0].method : null
+  const isSelectionAvailable = choices.some((choice) => choice.id === selectedShippingId.value)
+  if (isSelectionAvailable) return
+  selectedShippingId.value = choices.length === 1 ? choices[0].id : null
+})
+
+watch([address, itemCount, subtotal], ([foundAddress]) => {
+  if (!foundAddress || items.value.length === 0) {
+    resetShipping()
+    return
+  }
+
+  quoteShipping(foundAddress.cep, foundAddress.state, items.value)
 })
 
 watch(address, (foundAddress) => {
@@ -115,15 +134,14 @@ function describeOrderItems(order: Order): string {
 }
 
 function checkout(): void {
-  if (!canCheckout.value || !deliveryMethod.value) return
+  if (!canCheckout.value || !selectedShipping.value) return
 
   const orderCode = generateOrderCode()
   const message = buildOrderMessage(orderCode, {
     customerName: customerName.value,
     items: items.value,
     subtotal: subtotal.value,
-    deliveryMethod: deliveryMethod.value,
-    deliveryFee: deliveryFee.value,
+    shipping: selectedShipping.value,
     address: requiresAddress.value ? { ...shippingAddress } : null,
   })
 
@@ -131,7 +149,7 @@ function checkout(): void {
     code: orderCode,
     createdAt: new Date().toISOString(),
     items: items.value.map((item) => ({ ...item })),
-    deliveryMethod: deliveryMethod.value,
+    deliveryLabel: describeShipping(selectedShipping.value),
     total: total.value,
     message,
   }
@@ -199,18 +217,19 @@ function checkout(): void {
               </button>
             </div>
             <p v-if="errorMessage" class="mt-2 text-sm text-terracotta" role="alert">{{ errorMessage }}</p>
+            <p v-else-if="isQuoting" class="mt-2 text-sm text-ink-muted" role="status">Calculando o frete…</p>
           </form>
 
           <div v-if="deliveryChoices.length" role="radiogroup" aria-label="Forma de entrega" class="mt-4 space-y-2">
             <button
               v-for="choice in deliveryChoices"
-              :key="choice.method"
+              :key="choice.id"
               type="button"
               role="radio"
-              :aria-checked="deliveryMethod === choice.method"
+              :aria-checked="selectedShippingId === choice.id"
               class="flex w-full items-start justify-between gap-4 rounded-2xl border px-4 py-3.5 text-left transition duration-300 ease-apple"
-              :class="deliveryMethod === choice.method ? 'border-forest bg-forest/[0.04]' : 'border-line hover:border-forest/30'"
-              @click="deliveryMethod = choice.method"
+              :class="selectedShippingId === choice.id ? 'border-forest bg-forest/[0.04]' : 'border-line hover:border-forest/30'"
+              @click="selectedShippingId = choice.id"
             >
               <span>
                 <span class="block text-[15px] font-medium text-ink">{{ choice.title }}</span>
@@ -258,7 +277,7 @@ function checkout(): void {
             <div class="flex justify-between">
               <dt class="text-ink-muted">Entrega</dt>
               <dd class="text-ink">
-                {{ deliveryMethod ? formatCurrency(deliveryFee) : '—' }}
+                {{ selectedShipping ? formatCurrency(deliveryFee) : '—' }}
               </dd>
             </div>
             <div class="flex justify-between pt-3 text-lg font-semibold">
@@ -291,7 +310,7 @@ function checkout(): void {
               <span class="ml-2 font-normal text-ink-muted">{{ formatOrderDate(order.createdAt) }}</span>
             </p>
             <p class="mt-1 text-sm text-ink-muted">{{ describeOrderItems(order) }}</p>
-            <p class="mt-1 text-sm text-ink-muted">{{ deliveryLabels[order.deliveryMethod] }} · {{ formatCurrency(order.total) }}</p>
+            <p class="mt-1 text-sm text-ink-muted">{{ order.deliveryLabel }} ·{{ formatCurrency(order.total) }}</p>
           </div>
           <a :href="buildWhatsappUrl(order.message)" target="_blank" rel="noopener noreferrer" class="link-accent shrink-0 text-sm">
             Enviar de novo

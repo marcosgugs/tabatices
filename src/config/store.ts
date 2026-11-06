@@ -3,6 +3,8 @@ export const storeConfig = {
   whatsappNumber: '5511982458010',
   instagramHandle: 'tabatices.art',
   pixDiscountPercent: 5,
+  shippingQuoteUrl: 'https://tabatices-frete.tabata-91e.workers.dev/quote',
+  shippingPackage: { width: 16, height: 3, length: 22, weight: 0.3 },
   shippingRegions: [
     { name: 'São Paulo', states: ['SP'], fee: 20 },
     { name: 'Sudeste', states: ['RJ', 'MG', 'ES'], fee: 25 },

@@ -1,0 +1,16 @@
+{
+  "name": "tabatices-frete",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "types": "wrangler types",
+    "typecheck": "wrangler types >/dev/null && tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "wrangler": "^4.158.0"
+  }
+}
