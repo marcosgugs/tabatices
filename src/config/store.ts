@@ -4,12 +4,7 @@ export const storeConfig = {
   instagramHandle: 'tabatices.art',
   ownerBirthDate: { year: 1989, month: 9, day: 18 },
   pixDiscountPercent: 5,
-  localDelivery: {
-    city: 'São José dos Campos',
-    state: 'SP',
-    fee: 10,
-  },
-  pickupAddressHint: 'Combinamos o ponto de retirada com você.',
+  ownerCity: 'São José dos Campos',
   shippingRegions: [
     { name: 'São Paulo', states: ['SP'], fee: 20 },
     { name: 'Sudeste', states: ['RJ', 'MG', 'ES'], fee: 25 },

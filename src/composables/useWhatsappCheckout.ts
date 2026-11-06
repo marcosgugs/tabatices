@@ -12,8 +12,6 @@ interface OrderSummary {
 }
 
 export const deliveryLabels: Record<DeliveryMethod, string> = {
-  local: 'Entrega local',
-  pickup: 'Retirada',
   correios: 'Frete Correios',
 }
 
@@ -50,7 +48,7 @@ export function buildOrderMessage(orderCode: string, summary: OrderSummary): str
     `*Total: ${formatCurrency(total)}*`,
   ]
 
-  if (summary.address && summary.deliveryMethod !== 'pickup') {
+  if (summary.address) {
     lines.push('', '*Endereço de entrega*', ...describeAddress(summary.address))
   }
 

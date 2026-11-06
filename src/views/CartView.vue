@@ -25,7 +25,7 @@ const cartStore = useCartStore()
 const { items, subtotal, itemCount } = storeToRefs(cartStore)
 const ordersStore = useOrdersStore()
 const { orders } = storeToRefs(ordersStore)
-const { address, isLoading, errorMessage, isLocalDelivery, lookup, reset } = useDeliveryLookup()
+const { address, isLoading, errorMessage, lookup, reset } = useDeliveryLookup()
 
 const customerName = ref('')
 const cep = ref('')
@@ -47,23 +47,6 @@ const shippingFee = computed(() => (address.value ? getShippingFee(address.value
 const deliveryChoices = computed<DeliveryChoice[]>(() => {
   if (!address.value) return []
 
-  if (isLocalDelivery.value) {
-    return [
-      {
-        method: 'local',
-        title: 'Entrega local',
-        description: `Levamos até você em ${storeConfig.localDelivery.city}.`,
-        priceLabel: formatCurrency(storeConfig.localDelivery.fee),
-      },
-      {
-        method: 'pickup',
-        title: 'Retirada',
-        description: storeConfig.pickupAddressHint,
-        priceLabel: 'Grátis',
-      },
-    ]
-  }
-
   return [
     {
       method: 'correios',
@@ -74,14 +57,10 @@ const deliveryChoices = computed<DeliveryChoice[]>(() => {
   ]
 })
 
-const deliveryFee = computed(() => {
-  if (deliveryMethod.value === 'local') return storeConfig.localDelivery.fee
-  if (deliveryMethod.value === 'correios') return shippingFee.value
-  return 0
-})
+const deliveryFee = computed(() => (deliveryMethod.value ? shippingFee.value : 0))
 const total = computed(() => subtotal.value + deliveryFee.value)
 const pixTotal = computed(() => subtotal.value * (1 - storeConfig.pixDiscountPercent / 100) + deliveryFee.value)
-const requiresAddress = computed(() => deliveryMethod.value !== null && deliveryMethod.value !== 'pickup')
+const requiresAddress = computed(() => deliveryMethod.value !== null)
 
 const isAddressComplete = computed(
   () =>

@@ -19,7 +19,7 @@ const orderSteps = [
   },
   {
     title: 'Receba em casa',
-    description: `Entrega local em ${storeConfig.localDelivery.city}, retirada ou envio pelos Correios.`,
+    description: 'Envio pelos Correios para todo o Brasil.',
   },
 ]
 
@@ -33,7 +33,7 @@ function calculateAge(birthDate: { year: number; month: number; day: number }): 
 }
 
 const aboutParagraphs = [
-  `Tenho ${calculateAge(storeConfig.ownerBirthDate)} anos e moro em ${storeConfig.localDelivery.city} com meu marido, meu filho e nossos dois gatos. Sou programadora, mas desenho desde que me entendo por gente. Desenhar sempre foi meu hobby, aquele momento só meu, feito por puro prazer.`,
+  `Tenho ${calculateAge(storeConfig.ownerBirthDate)} anos e moro em ${storeConfig.ownerCity} com meu marido, meu filho e nossos dois gatos. Sou programadora, mas desenho desde que me entendo por gente. Desenhar sempre foi meu hobby, aquele momento só meu, feito por puro prazer.`,
   'Há pouco tempo, comecei a usar cadernos para organizar o meu dia. Quando vi, já estava desenhando as capas, e cada caderno novo virou uma desculpa para um desenho novo.',
   'Daí nasceu a Tabatices, algo como "coisas da Tabata": cadernos com a minha cara, feitos à mão, traço por traço, para fazer parte da sua rotina também.',
 ]

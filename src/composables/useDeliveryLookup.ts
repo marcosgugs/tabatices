@@ -1,5 +1,4 @@
-import { computed, ref } from 'vue'
-import { storeConfig } from '@/config/store'
+import { ref } from 'vue'
 
 interface ViaCepResponse {
   logradouro: string
@@ -17,14 +16,6 @@ export interface DeliveryAddress {
   state: string
 }
 
-function normalizeText(value: string): string {
-  return value
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .trim()
-    .toLowerCase()
-}
-
 export function onlyDigits(value: string): string {
   return value.replace(/\D/g, '')
 }
@@ -38,15 +29,6 @@ export function useDeliveryLookup() {
   const address = ref<DeliveryAddress | null>(null)
   const isLoading = ref(false)
   const errorMessage = ref('')
-
-  const isLocalDelivery = computed(() => {
-    if (!address.value) return false
-
-    return (
-      normalizeText(address.value.city) === normalizeText(storeConfig.localDelivery.city) &&
-      normalizeText(address.value.state) === normalizeText(storeConfig.localDelivery.state)
-    )
-  })
 
   async function lookup(cep: string): Promise<void> {
     const digits = onlyDigits(cep)
@@ -89,5 +71,5 @@ export function useDeliveryLookup() {
     errorMessage.value = ''
   }
 
-  return { address, isLoading, errorMessage, isLocalDelivery, lookup, reset }
+  return { address, isLoading, errorMessage, lookup, reset }
 }

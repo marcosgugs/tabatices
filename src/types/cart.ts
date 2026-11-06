@@ -8,7 +8,7 @@ export interface CartItem {
   quantity: number
 }
 
-export type DeliveryMethod = 'local' | 'pickup' | 'correios'
+export type DeliveryMethod = 'correios'
 
 export interface ShippingAddress {
   cep: string
