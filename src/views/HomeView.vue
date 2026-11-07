@@ -24,10 +24,10 @@ const orderSteps = [
 ]
 
 const aboutParagraphs = [
-  'Sou mãe, programadora e desenhista por paixão. Desenho desde que me entendo por gente. Sempre foi uma forma de me encontrar, relaxar e colocar um pouco de mim no mundo.',
+  'Sou mãe, programadora e desenhista por paixão. Desenho desde que me entendo por gente. Sempre foi uma forma de me encontrar, relaxar e demonstrar carinho. Gosto de pensar que um desenho feito para alguém é também um jeito de dizer que aquela pessoa é especial.',
   'A verdade é que gosto de enfeitar tudo que posso. É capa de caderno, pote de cozinha, parede do quarto... A arte está presente nos pequenos detalhes da minha vida, e dificilmente alguma coisa escapa da minha vontade de personalizar.',
-  'Há pouco tempo, comecei a usar cadernos para organizar meu dia. Quando percebi, já estava desenhando as capas, e cada caderno novo virava uma desculpa para um desenho novo.',
-  'Daí nasceu a Tabatices, algo como "coisas da Tabata", cadernos com a minha cara, feitos à mão, traço por traço, para enfeitar a sua rotina também.',
+  'Há pouco tempo, comecei a usar cadernos para organizar e registrar meu dia. Quando percebi, já estava desenhando as capas, e cada caderno novo virava uma desculpa para um desenho novo.',
+  'Daí nasceu a Tabatices, algo como "coisas da Tabata": cadernos com a minha cara, feitos à mão, traço por traço, para enfeitar a sua rotina também.',
 ]
 
 const highlights = [
@@ -83,20 +83,20 @@ const highlights = [
     </section>
 
     <section id="sobre" class="mx-auto max-w-6xl scroll-mt-20 px-5 pt-24 sm:px-8">
-      <div class="grid items-center gap-12 lg:grid-cols-[5fr_7fr] lg:gap-20">
-        <div class="relative mx-auto w-full max-w-sm lg:max-w-none">
-          <div class="absolute -inset-4 -z-10 rounded-[44px] bg-rose/50 blur-2xl" aria-hidden="true"></div>
+      <div class="mx-auto flow-root max-w-4xl">
+        <div class="relative mx-auto mb-10 w-full max-w-60 sm:float-left sm:mr-10 sm:mb-6 sm:w-60 lg:mr-12 lg:w-72 lg:max-w-72">
+          <div class="absolute -inset-3 -z-10 rounded-[40px] bg-rose/50 blur-2xl" aria-hidden="true"></div>
           <img
             :src="publicAsset('images/tabata.webp')"
             alt="Tabata sorrindo em frente a uma árvore de primavera florida"
             width="900"
             height="1200"
             loading="lazy"
-            class="aspect-[4/5] w-full rounded-[36px] object-cover object-top shadow-[0_30px_60px_-30px_rgba(46,58,47,0.45)]"
+            class="aspect-[4/5] w-full rounded-[32px] object-cover object-top shadow-[0_30px_60px_-30px_rgba(46,58,47,0.45)]"
           />
         </div>
 
-        <div class="max-w-xl">
+        <div>
           <p class="eyebrow">Sobre</p>
           <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Prazer, Tabata.</h2>
           <div class="mt-6 space-y-4 text-lg leading-relaxed text-ink-muted">
