@@ -7,7 +7,7 @@
     "enabled": true
   },
   "vars": {
-    "MELHOR_ENVIO_API_URL": "https://sandbox.melhorenvio.com.br",
+    "MELHOR_ENVIO_API_URL": "https://melhorenvio.com.br",
     "ORIGIN_POSTAL_CODE": "12233710",
     "ALLOWED_ORIGINS": "https://tabatices.art,https://www.tabatices.art,https://marcosgugs.github.io,http://localhost:5173",
     "USER_AGENT": "Tabatices (tabataschnoeller@gmail.com)",
