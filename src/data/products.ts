@@ -22,11 +22,19 @@ const defaultPaperOptions: ProductOption[] = [
 ]
 
 const defaultDetails = [
-  'Tamanho A5',
-  'Capa kraft rígida ilustrada à mão',
-  'Espiral duplo anel preto',
+  'Caderno Cicero Linha Kraft',
+  'Tamanho 14 × 21 cm',
+  '96 folhas de papel offset 75 g/m²',
+  'Capa dura kraft ilustrada à mão',
+  'Espiral wire-o duplo anel preto',
   'Marcador de página em cetim',
 ]
+
+export const baseNotebook = {
+  brand: 'Cicero',
+  image: 'images/caderno-cicero.webp',
+  imageAlt: 'Caderno Cicero Linha Kraft 14 × 21 cm sem ilustração, com capa kraft, espiral preto e cinta da marca',
+}
 
 export const products: Product[] = [
   {

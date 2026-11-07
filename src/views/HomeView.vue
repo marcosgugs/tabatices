@@ -23,19 +23,11 @@ const orderSteps = [
   },
 ]
 
-function calculateAge(birthDate: { year: number; month: number; day: number }): number {
-  const today = new Date()
-  const hasHadBirthdayThisYear =
-    today.getMonth() + 1 > birthDate.month ||
-    (today.getMonth() + 1 === birthDate.month && today.getDate() >= birthDate.day)
-
-  return today.getFullYear() - birthDate.year - (hasHadBirthdayThisYear ? 0 : 1)
-}
-
 const aboutParagraphs = [
-  `Tenho ${calculateAge(storeConfig.ownerBirthDate)} anos e moro em ${storeConfig.ownerCity} com meu marido, meu filho e nossos dois gatos. Sou programadora, mas desenho desde que me entendo por gente. Desenhar sempre foi meu hobby, aquele momento só meu, feito por puro prazer.`,
-  'Há pouco tempo, comecei a usar cadernos para organizar o meu dia. Quando vi, já estava desenhando as capas, e cada caderno novo virou uma desculpa para um desenho novo.',
-  'Daí nasceu a Tabatices, algo como "coisas da Tabata": cadernos com a minha cara, feitos à mão, traço por traço, para fazer parte da sua rotina também.',
+  'Sou mãe, programadora e desenhista por paixão. Desenho desde que me entendo por gente. Sempre foi uma forma de me encontrar, relaxar e colocar um pouco de mim no mundo.',
+  'A verdade é que gosto de enfeitar tudo que posso. É capa de caderno, pote de cozinha, parede do quarto... A arte está presente nos pequenos detalhes da minha vida, e dificilmente alguma coisa escapa da minha vontade de personalizar.',
+  'Há pouco tempo, comecei a usar cadernos para organizar meu dia. Quando percebi, já estava desenhando as capas, e cada caderno novo virava uma desculpa para um desenho novo.',
+  'Daí nasceu a Tabatices, algo como "coisas da Tabata", cadernos com a minha cara, feitos à mão, traço por traço, para enfeitar a sua rotina também.',
 ]
 
 const highlights = [

@@ -2,9 +2,7 @@ export const storeConfig = {
   name: 'Tabatices',
   whatsappNumber: '5511982458010',
   instagramHandle: 'tabatices.art',
-  ownerBirthDate: { year: 1989, month: 9, day: 18 },
   pixDiscountPercent: 5,
-  ownerCity: 'São José dos Campos',
   shippingRegions: [
     { name: 'São Paulo', states: ['SP'], fee: 20 },
     { name: 'Sudeste', states: ['RJ', 'MG', 'ES'], fee: 25 },

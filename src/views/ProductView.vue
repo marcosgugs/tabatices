@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { findProductBySlug, products } from '@/data/products'
+import { baseNotebook, findProductBySlug, products } from '@/data/products'
 import { formatCurrency } from '@/composables/useCurrency'
 import { storeConfig } from '@/config/store'
 import { useCartStore } from '@/stores/cart'
@@ -17,7 +17,7 @@ const cartStore = useCartStore()
 const product = computed(() => findProductBySlug(String(route.params.slug)))
 const otherProducts = computed(() => products.filter((item) => item.slug !== product.value?.slug).slice(0, 2))
 
-type GalleryView = 'cover' | 'paper'
+type GalleryView = 'cover' | 'paper' | 'notebook'
 
 interface GalleryItem {
   view: GalleryView
@@ -51,6 +51,13 @@ const galleryItems = computed<GalleryItem[]>(() => {
       imageAlt: selectedPaperOption.value.imageAlt,
     })
   }
+
+  items.push({
+    view: 'notebook',
+    label: `Caderno ${baseNotebook.brand}`,
+    image: baseNotebook.image,
+    imageAlt: baseNotebook.imageAlt,
+  })
 
   return items
 })
@@ -178,6 +185,10 @@ function addToCart(): void {
 
         <div class="mt-8 space-y-4 text-[17px] leading-relaxed text-ink/85">
           <p>{{ product.description }}</p>
+          <p>
+            Todos os cadernos são da {{ baseNotebook.brand }}, papelaria brasileira desde 2005 reconhecida pela qualidade:
+            capa dura, 96 folhas de papel offset 75 g/m² e encadernação wire-o.
+          </p>
           <p>Cada peça é produzida manualmente, por isso podem ocorrer pequenas variações em relação à foto.</p>
           <p v-if="product.isInspiredByReference" class="text-[15px] text-ink-muted">
             Ilustração feita à mão, inspirada em uma referência encontrada na internet. Não é uma criação autoral.
