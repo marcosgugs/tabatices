@@ -98,8 +98,8 @@ const highlights = [
 
         <div>
           <p class="eyebrow">Sobre</p>
-          <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Prazer, Tabata.</h2>
-          <div class="mt-6 space-y-4 text-lg leading-relaxed text-ink-muted">
+          <h2 class="mt-2 font-handwritten text-5xl font-bold text-forest sm:text-6xl">Prazer, Tabata.</h2>
+          <div class="mt-5 space-y-4 font-handwritten text-2xl leading-snug text-ink">
             <p v-for="paragraph in aboutParagraphs" :key="paragraph">{{ paragraph }}</p>
           </div>
           <a

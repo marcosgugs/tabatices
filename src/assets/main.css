@@ -16,6 +16,7 @@
   --font-sans:
     -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'Inter',
     system-ui, sans-serif;
+  --font-handwritten: 'Caveat', cursive;
 
   --ease-apple: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
