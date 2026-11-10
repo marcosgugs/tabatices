@@ -49,7 +49,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <Teleport to="body">
+  <Teleport to="#teleports">
     <Transition name="drawer-backdrop">
       <div v-if="isDrawerOpen" class="fixed inset-0 z-50 bg-ink/30 backdrop-blur-[2px]" aria-hidden="true" @click="cartStore.closeDrawer"></div>
     </Transition>

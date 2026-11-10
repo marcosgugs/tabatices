@@ -29,6 +29,7 @@ const { itemCount } = storeToRefs(cartStore)
           class="relative flex size-10 items-center justify-center rounded-full transition-colors hover:bg-forest/5"
           :aria-label="`Carrinho com ${itemCount} ${itemCount === 1 ? 'item' : 'itens'}`"
           aria-haspopup="dialog"
+          data-allow-mismatch
           @click="cartStore.openDrawer"
         >
           <svg viewBox="0 0 24 24" class="size-[22px] text-forest" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">

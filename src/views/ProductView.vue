@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { baseNotebook, findProductBySlug, products } from '@/data/products'
 import { formatCurrency } from '@/composables/useCurrency'
+import { publicAsset } from '@/composables/usePublicAsset'
 import { storeConfig } from '@/config/store'
 import { useCartStore } from '@/stores/cart'
 import SegmentedControl from '@/components/SegmentedControl.vue'
@@ -40,14 +41,14 @@ const galleryItems = computed<GalleryItem[]>(() => {
   if (!product.value) return []
 
   const items: GalleryItem[] = [
-    { view: 'cover', label: 'Capa', image: product.value.image, imageAlt: product.value.imageAlt },
+    { view: 'cover', label: 'Capa', image: publicAsset(product.value.image), imageAlt: product.value.imageAlt },
   ]
 
   if (selectedPaperOption.value) {
     items.push({
       view: 'paper',
       label: `Miolo ${selectedPaperOption.value.label.toLowerCase()}`,
-      image: selectedPaperOption.value.image,
+      image: publicAsset(selectedPaperOption.value.image),
       imageAlt: selectedPaperOption.value.imageAlt,
     })
   }
@@ -55,7 +56,7 @@ const galleryItems = computed<GalleryItem[]>(() => {
   items.push({
     view: 'notebook',
     label: `Caderno ${baseNotebook.brand}`,
-    image: baseNotebook.image,
+    image: publicAsset(baseNotebook.image),
     imageAlt: baseNotebook.imageAlt,
   })
 

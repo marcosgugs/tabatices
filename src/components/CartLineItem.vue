@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useCartStore } from '@/stores/cart'
 import { formatCurrency } from '@/composables/useCurrency'
+import { publicAsset } from '@/composables/usePublicAsset'
 import QuantityStepper from '@/components/QuantityStepper.vue'
 import type { CartItem } from '@/types/cart'
 
@@ -14,7 +15,7 @@ const cartStore = useCartStore()
 <template>
   <li class="flex gap-5 py-6">
     <RouterLink :to="{ name: 'product', params: { slug: item.slug } }" class="shrink-0">
-      <img :src="item.image" :alt="item.name" width="96" height="120" class="h-30 w-24 rounded-2xl object-cover" />
+      <img :src="publicAsset(item.image)" :alt="item.name" width="96" height="120" class="h-30 w-24 rounded-2xl object-cover" />
     </RouterLink>
 
     <div class="flex min-w-0 flex-1 flex-col">

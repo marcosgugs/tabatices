@@ -1,5 +1,6 @@
 export const storeConfig = {
   name: 'Tabatices',
+  siteUrl: 'https://tabatices.art',
   whatsappNumber: '5511982458010',
   instagramHandle: 'tabatices.art',
   pixDiscountPercent: 5,

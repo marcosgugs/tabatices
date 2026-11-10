@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Product } from '@/types/product'
 import { formatCurrency } from '@/composables/useCurrency'
+import { publicAsset } from '@/composables/usePublicAsset'
 
 defineProps<{
   product: Product
@@ -11,7 +12,7 @@ defineProps<{
   <RouterLink :to="{ name: 'product', params: { slug: product.slug } }" class="group block">
     <div class="overflow-hidden rounded-[28px] bg-cream-deep shadow-[0_1px_2px_rgba(46,58,47,0.06)]">
       <img
-        :src="product.image"
+        :src="publicAsset(product.image)"
         :alt="product.imageAlt"
         loading="lazy"
         width="1200"
