@@ -8,6 +8,36 @@ interface ShippingQuoteResponse {
   options: ShippingOption[]
 }
 
+interface ShippingBox {
+  id: string
+  quantity: number
+  unitPrice: number
+  width: number
+  height: number
+  length: number
+  weight: number
+}
+
+function buildShippingBoxes(items: CartItem[]): ShippingBox[] {
+  const { weightsInKgByItemCount, ...dimensions } = storeConfig.shippingBox
+  const itemsPerBox = weightsInKgByItemCount.length
+  const totalQuantity = items.reduce((total, item) => total + item.quantity, 0)
+  const averageUnitPrice = items.reduce((total, item) => total + item.unitPrice * item.quantity, 0) / totalQuantity
+  const boxCount = Math.ceil(totalQuantity / itemsPerBox)
+
+  return [...Array(boxCount).keys()].map((boxIndex) => {
+    const itemsInBox = Math.min(itemsPerBox, totalQuantity - boxIndex * itemsPerBox)
+
+    return {
+      id: `caixa-${boxIndex + 1}`,
+      quantity: 1,
+      unitPrice: Number((averageUnitPrice * itemsInBox).toFixed(2)),
+      ...dimensions,
+      weight: weightsInKgByItemCount[itemsInBox - 1],
+    }
+  })
+}
+
 function buildFallbackOption(state: string): ShippingOption {
   return { id: 'tabela', carrier: 'Correios', service: 'PAC', price: getShippingFee(state), deliveryDays: null }
 }
@@ -27,12 +57,7 @@ export function useShippingQuote() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           postalCode: onlyDigits(postalCode),
-          items: items.map((item) => ({
-            id: item.id,
-            quantity: item.quantity,
-            unitPrice: item.unitPrice,
-            ...storeConfig.shippingPackage,
-          })),
+          items: buildShippingBoxes(items),
         }),
       })
       if (!response.ok) throw new Error('quote_failed')
