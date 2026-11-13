@@ -34,7 +34,10 @@ function buildOrganizationData(): Record<string, unknown> {
     name: storeConfig.name,
     url: storeConfig.siteUrl,
     logo: toAbsoluteUrl('images/logo.webp'),
-    sameAs: [`https://instagram.com/${storeConfig.instagramHandle}`],
+    sameAs: [
+      `https://instagram.com/${storeConfig.instagramHandle}`,
+      `https://www.tiktok.com/@${storeConfig.tiktokHandle}`,
+    ],
   }
 }
 

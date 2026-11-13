@@ -2,6 +2,8 @@
 import { products } from '@/data/products'
 import { storeConfig } from '@/config/store'
 import ProductCard from '@/components/ProductCard.vue'
+import IconInstagram from '@/components/IconInstagram.vue'
+import IconTiktok from '@/components/IconTiktok.vue'
 import { publicAsset } from '@/composables/usePublicAsset'
 
 const orderSteps = [
@@ -20,6 +22,21 @@ const orderSteps = [
   {
     title: 'Receba em casa',
     description: 'Envio pelos Correios para todo o Brasil.',
+  },
+]
+
+const socialLinks = [
+  {
+    name: 'Instagram',
+    handle: storeConfig.instagramHandle,
+    url: `https://instagram.com/${storeConfig.instagramHandle}`,
+    icon: IconInstagram,
+  },
+  {
+    name: 'TikTok',
+    handle: storeConfig.tiktokHandle,
+    url: `https://www.tiktok.com/@${storeConfig.tiktokHandle}`,
+    icon: IconTiktok,
   },
 ]
 
@@ -102,14 +119,20 @@ const highlights = [
           <div class="mt-5 space-y-4 font-handwritten text-2xl leading-snug text-ink">
             <p v-for="paragraph in aboutParagraphs" :key="paragraph">{{ paragraph }}</p>
           </div>
-          <a
-            :href="`https://instagram.com/${storeConfig.instagramHandle}`"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="link-accent mt-8 inline-block"
-          >
-            Acompanhe no Instagram @{{ storeConfig.instagramHandle }}
-          </a>
+          <div class="mt-8 flex items-center gap-4">
+            <p class="font-medium text-ink">Me siga nas redes</p>
+            <a
+              v-for="socialLink in socialLinks"
+              :key="socialLink.name"
+              :href="socialLink.url"
+              :aria-label="`${socialLink.name} @${socialLink.handle}`"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="link-accent"
+            >
+              <component :is="socialLink.icon" class="size-6" />
+            </a>
+          </div>
         </div>
       </div>
     </section>

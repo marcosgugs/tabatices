@@ -3,6 +3,7 @@ export const storeConfig = {
   siteUrl: 'https://tabatices.art',
   whatsappNumber: '5511982458010',
   instagramHandle: 'tabatices.art',
+  tiktokHandle: 'tabatices.art',
   pixDiscountPercent: 5,
   shippingQuoteUrl: 'https://tabatices-frete.tabata-91e.workers.dev/quote',
   shippingBox: { length: 26, width: 19, height: 6, weightsInKgByItemCount: [0.345, 0.6, 0.86, 1.12] },
