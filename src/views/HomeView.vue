@@ -120,7 +120,7 @@ const highlights = [
             <p v-for="paragraph in aboutParagraphs" :key="paragraph">{{ paragraph }}</p>
           </div>
           <div class="mt-8 flex items-center gap-4">
-            <p class="font-medium text-ink">Me siga nas redes</p>
+            <p class="font-medium text-ink">Mais Tabatices por aqui</p>
             <a
               v-for="socialLink in socialLinks"
               :key="socialLink.name"
