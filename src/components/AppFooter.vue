@@ -2,6 +2,7 @@
 import { storeConfig } from '@/config/store'
 import { buildWhatsappUrl } from '@/composables/useWhatsappCheckout'
 import IconWhatsapp from '@/components/IconWhatsapp.vue'
+import { socialLinks } from '@/data/socialLinks'
 
 const currentYear = new Date().getFullYear()
 const contactUrl = buildWhatsappUrl(`Olá! Vim pelo site da ${storeConfig.name} e tenho uma dúvida.`)
@@ -26,14 +27,15 @@ const contactUrl = buildWhatsappUrl(`Olá! Vim pelo site da ${storeConfig.name} 
               WhatsApp
             </a>
           </li>
-          <li>
+          <li v-for="socialLink in socialLinks" :key="socialLink.name">
             <a
-              :href="`https://instagram.com/${storeConfig.instagramHandle}`"
+              :href="socialLink.url"
               target="_blank"
               rel="noopener"
-              class="transition-colors hover:text-cream"
+              class="inline-flex items-center gap-2 transition-colors hover:text-cream"
             >
-              @{{ storeConfig.instagramHandle }}
+              <component :is="socialLink.icon" class="size-4" />
+              {{ socialLink.name }}
             </a>
           </li>
         </ul>

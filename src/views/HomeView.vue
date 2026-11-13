@@ -2,8 +2,7 @@
 import { products } from '@/data/products'
 import { storeConfig } from '@/config/store'
 import ProductCard from '@/components/ProductCard.vue'
-import IconInstagram from '@/components/IconInstagram.vue'
-import IconTiktok from '@/components/IconTiktok.vue'
+import { socialLinks } from '@/data/socialLinks'
 import { publicAsset } from '@/composables/usePublicAsset'
 
 const orderSteps = [
@@ -22,21 +21,6 @@ const orderSteps = [
   {
     title: 'Receba em casa',
     description: 'Envio pelos Correios para todo o Brasil.',
-  },
-]
-
-const socialLinks = [
-  {
-    name: 'Instagram',
-    handle: storeConfig.instagramHandle,
-    url: `https://instagram.com/${storeConfig.instagramHandle}`,
-    icon: IconInstagram,
-  },
-  {
-    name: 'TikTok',
-    handle: storeConfig.tiktokHandle,
-    url: `https://www.tiktok.com/@${storeConfig.tiktokHandle}`,
-    icon: IconTiktok,
   },
 ]
 
