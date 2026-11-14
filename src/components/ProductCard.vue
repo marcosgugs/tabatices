@@ -25,8 +25,12 @@ defineProps<{
         <h3 class="text-xl font-semibold tracking-tight text-ink">{{ product.name }}</h3>
         <p class="mt-1 text-[15px] text-ink-muted">{{ product.tagline }}</p>
       </div>
-      <p class="shrink-0 text-[15px] font-medium text-ink">{{ formatCurrency(product.price) }}</p>
+      <p class="shrink-0 text-[15px] font-medium text-ink">
+        {{ product.price === null ? 'Sob consulta' : formatCurrency(product.price) }}
+      </p>
     </div>
-    <span class="button-primary mt-5 ml-1 px-7 py-2.5 text-sm group-hover:bg-forest-soft">Comprar</span>
+    <span class="button-primary mt-5 ml-1 px-7 py-2.5 text-sm group-hover:bg-forest-soft">
+      {{ product.price === null ? 'Consultar' : 'Comprar' }}
+    </span>
   </RouterLink>
 </template>

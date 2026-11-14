@@ -1,3 +1,5 @@
+export type ProductCategory = 'notebook' | 'decor'
+
 export interface ProductOption {
   label: string
   priceDelta: number
@@ -5,16 +7,24 @@ export interface ProductOption {
   imageAlt: string
 }
 
+export interface ProductPhoto {
+  label: string
+  image: string
+  imageAlt: string
+}
+
 export interface Product {
   slug: string
+  category: ProductCategory
   name: string
   tagline: string
   description: string
   isInspiredByReference: boolean
-  price: number
+  price: number | null
   image: string
   imageAlt: string
-  productionDays: number
+  extraPhotos: ProductPhoto[]
+  productionDays: number | null
   details: string[]
   paperOptions: ProductOption[]
 }

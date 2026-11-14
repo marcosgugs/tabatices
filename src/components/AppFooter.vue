@@ -13,8 +13,8 @@ const contactUrl = buildWhatsappUrl(`Olá! Vim pelo site da ${storeConfig.name} 
     <div class="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-3 sm:px-8">
       <div>
         <p class="text-lg font-semibold tracking-tight text-cream">{{ storeConfig.name }}</p>
-        <p class="mt-2 max-w-xs text-sm leading-relaxed">
-          Cadernos com capas ilustradas à mão, feitos um a um sob encomenda.
+        <p class="mt-2 max-w-xs text-sm leading-relaxed text-pretty">
+          Cadernos e outras criações artesanais, ilustrados à mão e feitos para acompanhar você no dia a dia.
         </p>
       </div>
 
@@ -44,9 +44,9 @@ const contactUrl = buildWhatsappUrl(`Olá! Vim pelo site da ${storeConfig.name} 
       <div class="text-sm">
         <p class="font-medium text-cream">Bom saber</p>
         <ul class="mt-3 space-y-2 leading-relaxed">
-          <li>Produção começa após a confirmação do pagamento.</li>
-          <li>Peças feitas sob encomenda: troca apenas em caso de defeito.</li>
-          <li>{{ storeConfig.pixDiscountPercent }}% de desconto no Pix.</li>
+          <li>Produção sob encomenda, com prazo de preparação informado na confirmação do pedido.</li>
+          <li>Enviamos para todo o Brasil.</li>
+          <li>{{ storeConfig.pixDiscountPercent }}% de desconto nas compras via Pix.</li>
         </ul>
       </div>
     </div>

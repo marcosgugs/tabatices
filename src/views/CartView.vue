@@ -163,7 +163,7 @@ function checkout(): void {
 
 <template>
   <div class="mx-auto max-w-6xl px-5 pt-10 sm:px-8 lg:pt-16">
-    <h1 class="text-4xl font-semibold tracking-[-0.025em] text-forest sm:text-5xl">Seu carrinho.</h1>
+    <h1 class="text-4xl font-semibold tracking-[-0.025em] text-forest sm:text-5xl">Seu carrinho</h1>
 
     <div v-if="justPlacedOrder" class="mt-16 flex flex-col items-center rounded-[32px] bg-white/60 px-6 py-20 text-center" role="status">
       <img :src="publicAsset('apple-touch-icon.png')" alt="" width="96" height="96" class="size-24 rounded-full" />
@@ -301,7 +301,7 @@ function checkout(): void {
     </div>
 
     <section v-if="orders.length" class="mt-20" aria-labelledby="order-history-title">
-      <h2 id="order-history-title" class="text-2xl font-semibold tracking-tight text-forest">Seus pedidos.</h2>
+      <h2 id="order-history-title" class="text-2xl font-semibold tracking-tight text-forest">Seus pedidos</h2>
       <ul class="mt-6 divide-y divide-line border-y border-line">
         <li v-for="order in orders" :key="order.code" class="flex flex-col gap-3 py-5 sm:flex-row sm:items-center sm:justify-between sm:gap-8">
           <div class="min-w-0">

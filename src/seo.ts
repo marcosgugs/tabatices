@@ -57,9 +57,25 @@ export function buildPageMeta(route: RouteLocationNormalizedLoaded): PageMeta {
     if (!product) return homeMeta
 
     const path = `/produto/${product.slug}`
+    const isNotebook = product.category === 'notebook'
+    const productName = isNotebook ? `Caderno ${product.name}` : product.name
+    const offerData =
+      product.price === null
+        ? {}
+        : {
+            offers: {
+              '@type': 'Offer',
+              url: toAbsoluteUrl(path),
+              price: product.price.toFixed(2),
+              priceCurrency: 'BRL',
+              availability: 'https://schema.org/MadeToOrder',
+            },
+          }
 
     return {
-      title: `Caderno ${product.name} ilustrado à mão · ${storeConfig.name}`,
+      title: isNotebook
+        ? `${productName} ilustrado à mão · ${storeConfig.name}`
+        : `${productName}, peça feita à mão · ${storeConfig.name}`,
       description: truncate(product.description, maxDescriptionLength),
       path,
       image: product.image,
@@ -68,17 +84,11 @@ export function buildPageMeta(route: RouteLocationNormalizedLoaded): PageMeta {
       structuredData: {
         '@context': 'https://schema.org',
         '@type': 'Product',
-        name: `Caderno ${product.name}`,
+        name: productName,
         description: product.description,
         image: toAbsoluteUrl(product.image),
         brand: { '@type': 'Brand', name: storeConfig.name },
-        offers: {
-          '@type': 'Offer',
-          url: toAbsoluteUrl(path),
-          price: product.price.toFixed(2),
-          priceCurrency: 'BRL',
-          availability: 'https://schema.org/MadeToOrder',
-        },
+        ...offerData,
       },
     }
   }

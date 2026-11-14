@@ -8,19 +8,19 @@ import { publicAsset } from '@/composables/usePublicAsset'
 const orderSteps = [
   {
     title: 'Escolha sua capa',
-    description: 'Selecione a ilustração e o tipo de miolo: pautado, pontilhado ou liso.',
+    description: 'Escolha a ilustração que mais combina com você e o tipo de miolo: pautado, pontilhado ou liso.',
   },
   {
-    title: 'Finalize o pedido',
-    description: 'Revise seu carrinho, informe o endereço e envie. A gente confirma tudo com você.',
+    title: 'Faça seu pedido',
+    description: 'Confira sua escolha, informe os dados de entrega e envie seu pedido. Vamos confirmar tudo com você.',
   },
   {
-    title: 'Pague com tranquilidade',
-    description: `Pix com ${storeConfig.pixDiscountPercent}% de desconto ou cartão por link de pagamento.`,
+    title: 'Escolha como pagar',
+    description: `Pague via Pix e ganhe ${storeConfig.pixDiscountPercent}% de desconto ou escolha o cartão de crédito pelo link de pagamento.`,
   },
   {
     title: 'Receba em casa',
-    description: 'Envio pelos Correios para todo o Brasil.',
+    description: 'Preparamos seu pedido com cuidado e enviamos pelos Correios para todo o Brasil.',
   },
 ]
 
@@ -30,6 +30,9 @@ const aboutParagraphs = [
   'Há pouco tempo, comecei a usar cadernos para organizar e registrar meu dia. Quando percebi, já estava desenhando as capas, e cada caderno novo virava uma desculpa para um desenho novo.',
   'Daí nasceu a Tabatices, algo como "coisas da Tabata": cadernos com a minha cara, feitos à mão, traço por traço, para enfeitar a sua rotina também.',
 ]
+
+const notebooks = products.filter((product) => product.category === 'notebook')
+const decorPieces = products.filter((product) => product.category === 'decor')
 
 const highlights = [
   'Feito à mão',
@@ -41,12 +44,12 @@ const highlights = [
 <template>
   <div>
     <section class="mx-auto max-w-6xl px-5 pt-16 pb-20 text-center sm:px-8 sm:pt-24">
-      <p class="eyebrow">Feito à mão, um a um</p>
-      <h1 class="mx-auto mt-4 max-w-3xl text-[44px] leading-[1.05] font-semibold tracking-[-0.03em] text-forest sm:text-7xl">
-        Cadernos que contam histórias.
+      <p class="eyebrow">Pequenos detalhes, grandes personalidades</p>
+      <h1 class="mx-auto mt-4 max-w-3xl text-[44px] leading-[1.05] font-semibold tracking-[-0.03em] text-balance text-forest sm:text-7xl">
+        Arte para enfeitar a sua rotina
       </h1>
-      <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink-muted sm:text-xl">
-        Cada capa é desenhada à mão, traço por traço. Um caderno com personalidade para guardar suas ideias.
+      <p class="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-pretty text-ink-muted sm:text-xl">
+        Cadernos feitos à mão, com capas ilustradas e cheias de personalidade, para acompanhar suas ideias, planos e histórias.
       </p>
 
       <div class="relative mx-auto mt-16 max-w-4xl">
@@ -73,18 +76,36 @@ const highlights = [
       <div class="mx-auto max-w-6xl px-5 sm:px-8">
         <div class="max-w-2xl">
           <p class="eyebrow">Coleção</p>
-          <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Escolha sua capa.</h2>
-          <p class="mt-4 text-lg text-ink-muted">Escolha a ilustração. O seu exemplar será desenhado à mão, só para você.</p>
+          <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Escolha sua capa</h2>
+          <p class="mt-4 text-lg text-ink-muted">Ilustrações para todos os gostos, em cadernos feitos à mão, com atenção a cada detalhe. Escolha a sua favorita!</p>
         </div>
 
-        <div class="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2">
-          <ProductCard v-for="product in products" :key="product.slug" :product="product" />
+        <div class="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+          <ProductCard v-for="product in notebooks" :key="product.slug" :product="product" />
         </div>
       </div>
     </section>
 
+    <section v-if="decorPieces.length" id="outras-tabatices" class="mx-auto max-w-6xl scroll-mt-20 px-5 pt-24 sm:px-8">
+      <div class="max-w-2xl">
+        <p class="eyebrow">Além dos cadernos</p>
+        <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Outras tabatices</h2>
+        <div class="mt-4 space-y-3 text-lg text-pretty text-ink-muted">
+          <p>
+            Nem só de cadernos vive a criatividade! Aqui você encontra outras peças artesanais, feitas em pequenas
+            quantidades e cheias de personalidade.
+          </p>
+          <p>Gostou? Chame a gente pelo WhatsApp!</p>
+        </div>
+      </div>
+
+      <div class="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
+        <ProductCard v-for="product in decorPieces" :key="product.slug" :product="product" />
+      </div>
+    </section>
+
     <section id="sobre" class="mx-auto max-w-6xl scroll-mt-20 px-5 pt-24 sm:px-8">
-      <div class="mx-auto flow-root max-w-4xl">
+      <div class="flow-root">
         <div class="relative mx-auto mb-10 w-full max-w-60 sm:float-left sm:mr-10 sm:mb-6 sm:w-60 lg:mr-12 lg:w-72 lg:max-w-72">
           <div class="absolute -inset-3 -z-10 rounded-[40px] bg-rose/50 blur-2xl" aria-hidden="true"></div>
           <img
@@ -99,7 +120,7 @@ const highlights = [
 
         <div>
           <p class="eyebrow">Sobre</p>
-          <h2 class="mt-2 font-handwritten text-5xl font-bold text-forest sm:text-6xl">Prazer, Tabata.</h2>
+          <h2 class="mt-2 font-handwritten text-5xl font-bold text-forest sm:text-6xl">Prazer, Tabata</h2>
           <div class="mt-5 space-y-4 font-handwritten text-2xl leading-snug text-ink">
             <p v-for="paragraph in aboutParagraphs" :key="paragraph">{{ paragraph }}</p>
           </div>
@@ -124,13 +145,13 @@ const highlights = [
     <section id="como-funciona" class="mx-auto max-w-6xl scroll-mt-20 px-5 pt-24 sm:px-8">
       <div class="max-w-2xl">
         <p class="eyebrow">Como funciona</p>
-        <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Simples assim.</h2>
+        <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Seu caderno, do seu jeito</h2>
       </div>
 
       <ol class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
         <li v-for="(step, stepIndex) in orderSteps" :key="step.title" class="rounded-[28px] bg-white/70 p-7">
           <span class="flex size-9 items-center justify-center rounded-full bg-rose/60 text-sm font-semibold text-forest">
-            {{ stepIndex + 1 }}
+            {{ String(stepIndex + 1).padStart(2, '0') }}
           </span>
           <h3 class="mt-6 text-lg font-semibold tracking-tight text-ink">{{ step.title }}</h3>
           <p class="mt-2 text-[15px] leading-relaxed text-ink-muted">{{ step.description }}</p>
