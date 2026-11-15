@@ -110,7 +110,7 @@ const highlights = [
           <div class="absolute -inset-3 -z-10 rounded-[40px] bg-rose/50 blur-2xl" aria-hidden="true"></div>
           <img
             :src="publicAsset('images/tabata.webp')"
-            alt="Tabata sorrindo em frente a uma árvore de primavera florida"
+            alt="Tabata sorrindo ao lado da mesa de desenho, com lápis de cor, canetas e uma ilustração de água-viva"
             width="900"
             height="1200"
             loading="lazy"
