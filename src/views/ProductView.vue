@@ -70,13 +70,22 @@ const galleryItems = computed<GalleryItem[]>(() => {
   }
 
   if (isNotebook.value) {
-    items.push({
-      view: 'notebook',
-      label: `Caderno ${baseNotebook.brand}`,
-      image: publicAsset(baseNotebook.image),
-      imageAlt: baseNotebook.imageAlt,
-      fit: 'contain',
-    })
+    items.push(
+      {
+        view: 'notebook',
+        label: `Caderno ${baseNotebook.brand}`,
+        image: publicAsset(baseNotebook.image),
+        imageAlt: baseNotebook.imageAlt,
+        fit: 'contain',
+      },
+      {
+        view: 'measurements',
+        label: 'Medidas',
+        image: publicAsset(baseNotebook.measurementsImage),
+        imageAlt: baseNotebook.measurementsImageAlt,
+        fit: 'contain',
+      },
+    )
   }
 
   return items

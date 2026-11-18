@@ -34,6 +34,8 @@ export const baseNotebook = {
   brand: 'Cicero',
   image: 'images/caderno-cicero.webp',
   imageAlt: 'Caderno Cicero Linha Kraft 14 × 21 cm sem ilustração, com capa kraft, espiral preto e cinta da marca',
+  measurementsImage: 'images/caderno-cicero-medidas.webp',
+  measurementsImageAlt: 'Caderno Cicero Linha Kraft com as medidas: 21 cm de comprimento, 14 cm de largura e 1,5 cm de espessura',
 }
 
 export const products: Product[] = [
