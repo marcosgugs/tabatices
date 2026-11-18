@@ -32,7 +32,6 @@ const aboutParagraphs = [
 ]
 
 const notebooks = products.filter((product) => product.category === 'notebook')
-const decorPieces = products.filter((product) => product.category === 'decor')
 
 const highlights = [
   'Feito à mão',
@@ -83,24 +82,6 @@ const highlights = [
         <div class="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
           <ProductCard v-for="product in notebooks" :key="product.slug" :product="product" />
         </div>
-      </div>
-    </section>
-
-    <section v-if="decorPieces.length" id="outras-tabatices" class="mx-auto max-w-6xl scroll-mt-20 px-5 pt-24 sm:px-8">
-      <div class="max-w-2xl">
-        <p class="eyebrow">Além dos cadernos</p>
-        <h2 class="mt-3 text-4xl font-semibold tracking-[-0.02em] text-forest sm:text-5xl">Outras tabatices</h2>
-        <div class="mt-4 space-y-3 text-lg text-pretty text-ink-muted">
-          <p>
-            Nem só de cadernos vive a criatividade! Aqui você encontra outras peças artesanais, feitas em pequenas
-            quantidades e cheias de personalidade.
-          </p>
-          <p>Gostou? Chame a gente pelo WhatsApp!</p>
-        </div>
-      </div>
-
-      <div class="mt-14 grid gap-x-8 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-        <ProductCard v-for="product in decorPieces" :key="product.slug" :product="product" />
       </div>
     </section>
 

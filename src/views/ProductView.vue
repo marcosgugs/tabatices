@@ -226,12 +226,7 @@ function addToCart(): void {
       </div>
 
       <div class="lg:py-6">
-        <RouterLink v-if="isNotebook" :to="{ name: 'home', hash: '#cadernos' }" class="link-accent text-sm">
-          ‹ Todos os cadernos
-        </RouterLink>
-        <RouterLink v-else :to="{ name: 'home', hash: '#outras-tabatices' }" class="link-accent text-sm">
-          ‹ Outras tabatices
-        </RouterLink>
+        <RouterLink :to="{ name: 'home', hash: '#cadernos' }" class="link-accent text-sm">‹ Todos os cadernos</RouterLink>
 
         <h1 class="mt-4 text-4xl font-semibold tracking-[-0.025em] text-forest sm:text-5xl">{{ product.name }}</h1>
         <p class="mt-3 text-lg text-ink-muted">{{ product.tagline }}</p>
