@@ -55,11 +55,11 @@ const highlights = [
         <div class="absolute inset-x-10 -bottom-6 top-16 -z-10 rounded-[40px] bg-rose/50 blur-3xl" aria-hidden="true"></div>
         <img
           :src="publicAsset('images/hero.webp')"
-          alt="Três cadernos kraft ilustrados à mão, com farol, tentáculo e água-viva, sobre tecido claro com flores secas"
-          width="1672"
-          height="941"
+          alt="Três cadernos kraft ilustrados à mão, com tentáculo, farol e rosa, sobre mesa de madeira com xícara de cerâmica, flores secas e caneta nanquim"
+          width="1600"
+          height="1067"
           fetchpriority="high"
-          class="mx-auto aspect-[1672/941] w-full rounded-[36px] object-cover shadow-[0_30px_60px_-30px_rgba(46,58,47,0.45)]"
+          class="mx-auto aspect-[3/2] w-full rounded-[36px] object-cover shadow-[0_30px_60px_-30px_rgba(46,58,47,0.45)]"
         />
       </div>
 
