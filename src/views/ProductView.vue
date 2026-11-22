@@ -107,6 +107,21 @@ const unitPrice = computed(() => {
 
 const pixPrice = computed(() => unitPrice.value * (1 - storeConfig.pixDiscountPercent / 100))
 
+const isPaymentOptionsOpen = ref(false)
+
+function roundUpToCents(amount: number): number {
+  return Math.ceil(Number((amount * 100).toFixed(4))) / 100
+}
+
+const cardInstallments = computed(() =>
+  storeConfig.customerCardFeesPercentByInstallmentCount.map((feePercent, feeIndex) => {
+    const installmentCount = feeIndex + 1
+    const total = roundUpToCents(unitPrice.value / (1 - feePercent / 100))
+
+    return { installmentCount, installmentValue: total / installmentCount, total, hasFee: feePercent > 0 }
+  }),
+)
+
 const priceInquiryUrl = computed(() => {
   if (!product.value) return ''
   return buildWhatsappUrl(`Olá! Vi a peça ${product.value.name} no site da ${storeConfig.name} e quero saber o preço.`)
@@ -123,6 +138,7 @@ watch(
     selectedPaper.value = currentProduct.paperOptions[0]?.label ?? ''
     quantity.value = 1
     activeView.value = 'cover'
+    isPaymentOptionsOpen.value = false
   },
   { immediate: true },
 )
@@ -245,18 +261,39 @@ function addToCart(): void {
           <p class="mt-1 text-sm text-ink-muted">Fale com a gente pelo WhatsApp para saber o valor desta peça.</p>
         </div>
         <div v-else class="mt-6">
-          <p class="text-2xl font-semibold tracking-tight text-ink">{{ formatCurrency(unitPrice) }}</p>
+          <p class="text-2xl font-semibold tracking-tight text-ink">
+            {{ formatCurrency(unitPrice) }}
+            <span class="text-base font-normal tracking-normal text-ink-muted">à vista</span>
+          </p>
           <p class="mt-1 text-sm text-ink-muted">
             ou <span class="font-medium text-terracotta">{{ formatCurrency(pixPrice) }}</span> no Pix
           </p>
+          <button
+            type="button"
+            class="link-accent mt-2 text-sm"
+            :aria-expanded="isPaymentOptionsOpen"
+            aria-controls="formas-de-pagamento"
+            @click="isPaymentOptionsOpen = !isPaymentOptionsOpen"
+          >
+            {{ isPaymentOptionsOpen ? 'Ocultar formas de pagamento' : 'Ver outras formas de pagamento' }}
+          </button>
+          <div v-show="isPaymentOptionsOpen" id="formas-de-pagamento" class="mt-4 max-w-sm rounded-2xl bg-white/70 p-5">
+            <p class="text-[15px] font-semibold text-ink">Cartão de crédito</p>
+            <ul class="mt-3 space-y-2 text-sm text-ink-muted">
+              <li
+                v-for="installment in cardInstallments"
+                :key="installment.installmentCount"
+                class="flex justify-between gap-4"
+              >
+                <span>{{ installment.installmentCount }}x de {{ formatCurrency(installment.installmentValue) }}</span>
+                <span>{{ installment.hasFee ? `total ${formatCurrency(installment.total)}` : 'sem juros' }}</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div class="mt-8 space-y-4 text-[17px] leading-relaxed text-ink/85">
           <p>{{ product.description }}</p>
-          <p v-if="isNotebook">
-            Todos os cadernos são da {{ baseNotebook.brand }}, papelaria brasileira desde 2005 reconhecida pela qualidade:
-            capa dura, 96 folhas de papel offset 75 g/m² e encadernação wire-o.
-          </p>
           <p>Cada peça é produzida manualmente, por isso podem ocorrer pequenas variações em relação à foto.</p>
           <p v-if="product.isInspiredByReference" class="text-[15px] text-ink-muted">
             Ilustração feita à mão, inspirada em uma referência encontrada na internet. Não é uma criação autoral.

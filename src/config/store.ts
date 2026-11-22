@@ -5,6 +5,7 @@ export const storeConfig = {
   instagramHandle: 'tabatices.art',
   tiktokHandle: 'tabatices.art',
   pixDiscountPercent: 5,
+  customerCardFeesPercentByInstallmentCount: [0, 6.09, 7.01, 7.91, 8.8],
   shippingQuoteUrl: 'https://tabatices-frete.tabata-91e.workers.dev/quote',
   shippingBox: { length: 26, width: 19, height: 6, weightsInKgByItemCount: [0.345, 0.6, 0.86, 1.12] },
   shippingRegions: [
