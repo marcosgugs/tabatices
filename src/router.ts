@@ -9,6 +9,19 @@ export function createAppRouter(history: RouterHistory) {
       { path: '/produto/:slug', name: 'product', component: () => import('@/views/ProductView.vue') },
       { path: '/carrinho', name: 'cart', component: () => import('@/views/CartView.vue') },
       { path: '/sacola', redirect: { name: 'cart' } },
+      {
+        path: '/painel',
+        component: () => import('@/views/PanelView.vue'),
+        meta: { isPanel: true },
+        children: [
+          { path: '', name: 'panel-orders', component: () => import('@/views/PanelOrdersView.vue') },
+          { path: 'pedidos/novo', name: 'panel-order-new', component: () => import('@/views/PanelOrderFormView.vue') },
+          { path: 'pedidos/:code', name: 'panel-order', component: () => import('@/views/PanelOrderFormView.vue') },
+          { path: 'clientes', name: 'panel-customers', component: () => import('@/views/PanelCustomersView.vue') },
+          { path: 'clientes/novo', name: 'panel-customer-new', component: () => import('@/views/PanelCustomerFormView.vue') },
+          { path: 'clientes/:id', name: 'panel-customer', component: () => import('@/views/PanelCustomerFormView.vue') },
+        ],
+      },
       { path: '/:pathMatch(.*)*', redirect: { name: 'home' } },
     ],
     scrollBehavior(to, _from, savedPosition) {

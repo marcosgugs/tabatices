@@ -97,6 +97,10 @@ export function buildPageMeta(route: RouteLocationNormalizedLoaded): PageMeta {
     return { ...homeMeta, title: `Carrinho · ${storeConfig.name}`, path: '/carrinho', isIndexable: false, structuredData: null }
   }
 
+  if (route.meta.isPanel === true) {
+    return { ...homeMeta, title: `Painel · ${storeConfig.name}`, path: '/painel', isIndexable: false, structuredData: null }
+  }
+
   return homeMeta
 }
 

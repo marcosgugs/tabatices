@@ -7,6 +7,10 @@ export const storeConfig = {
   pixDiscountPercent: 5,
   customerCardFeesPercentByInstallmentCount: [0, 6.09, 7.01, 7.91, 8.8],
   shippingQuoteUrl: 'https://tabatices-frete.tabata-91e.workers.dev/quote',
+  supabase: {
+    url: 'https://ulfstxohfdteqkyreuyd.supabase.co',
+    publishableKey: 'sb_publishable_zips9rpcJWUi52tqkXrOZw_CBgxmNA_',
+  },
   shippingBox: { length: 26, width: 19, height: 6, weightsInKgByItemCount: [0.345, 0.6, 0.86, 1.12] },
   shippingRegions: [
     { name: 'São Paulo', states: ['SP'], fee: 20 },

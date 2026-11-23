@@ -10,7 +10,7 @@ import { products } from '@/data/products'
 
 export const siteUrl = storeConfig.siteUrl
 export const prerenderPaths = ['/', ...products.map((product) => `/produto/${product.slug}`)]
-export const clientOnlyPaths = ['/carrinho']
+export const clientOnlyPaths = ['/carrinho', '/painel']
 
 async function resolveRoute(path: string) {
   const router = createAppRouter(createMemoryHistory())
