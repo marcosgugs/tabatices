@@ -28,7 +28,8 @@ const complementSeparator = ' — '
 
 function toLines(message: string): string[] {
   return message
-    .replace(/[  ]/g, ' ')
+    .replace(/\p{Cf}/gu, '')
+    .replace(/\p{Zs}/gu, ' ')
     .replace(/\*/g, '')
     .split(/\r?\n/)
     .map((line) => line.replace(whatsappCopyPrefixPattern, '').trim())
