@@ -11,7 +11,13 @@ export const storeConfig = {
     url: 'https://ulfstxohfdteqkyreuyd.supabase.co',
     publishableKey: 'sb_publishable_zips9rpcJWUi52tqkXrOZw_CBgxmNA_',
   },
-  shippingBox: { length: 26, width: 19, height: 6, weightsInKgByItemCount: [0.345, 0.6, 0.86, 1.12] },
+  shippingBox: {
+    sizes: [
+      { maxItemCount: 2, length: 27, width: 17, height: 3.5 },
+      { maxItemCount: 7, length: 27, width: 17.5, height: 9 },
+    ],
+    weightsInKgByItemCount: [0.338, 0.6, 0.8, 1, 1.5, 1.7, 1.9],
+  },
   shippingRegions: [
     { name: 'São Paulo', states: ['SP'], fee: 20 },
     { name: 'Sudeste', states: ['RJ', 'MG', 'ES'], fee: 25 },

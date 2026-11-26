@@ -19,7 +19,7 @@ interface ShippingBox {
 }
 
 function buildShippingBoxes(items: CartItem[]): ShippingBox[] {
-  const { weightsInKgByItemCount, ...dimensions } = storeConfig.shippingBox
+  const { sizes, weightsInKgByItemCount } = storeConfig.shippingBox
   const itemsPerBox = weightsInKgByItemCount.length
   const totalQuantity = items.reduce((total, item) => total + item.quantity, 0)
   const averageUnitPrice = items.reduce((total, item) => total + item.unitPrice * item.quantity, 0) / totalQuantity
@@ -27,6 +27,7 @@ function buildShippingBoxes(items: CartItem[]): ShippingBox[] {
 
   return [...Array(boxCount).keys()].map((boxIndex) => {
     const itemsInBox = Math.min(itemsPerBox, totalQuantity - boxIndex * itemsPerBox)
+    const { maxItemCount, ...dimensions } = sizes.find((size) => itemsInBox <= size.maxItemCount) ?? sizes[sizes.length - 1]
 
     return {
       id: `caixa-${boxIndex + 1}`,
