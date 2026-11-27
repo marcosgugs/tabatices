@@ -6,6 +6,7 @@ import { usePanelOrdersStore } from '@/stores/panelOrders'
 import { findNextStatus, orderStatuses } from '@/data/orderStatuses'
 import { formatCurrency } from '@/composables/useCurrency'
 import { calculateTotal, describeItems, formatOrderDate } from '@/composables/useOrderSummary'
+import { describePayment } from '@/composables/usePayment'
 import { matchesSearch } from '@/composables/useTextSearch'
 import OrderStatusBadge from '@/components/OrderStatusBadge.vue'
 import type { OrderStatus, OrderStatusOption, PanelOrder } from '@/types/panel'
@@ -122,6 +123,7 @@ async function moveToStatus(order: PanelOrder, status: OrderStatus): Promise<voi
           <span class="mt-1 block text-sm text-ink-muted">{{ describeItems(listItem.order.items) }}</span>
           <span class="mt-1 block text-sm text-ink-muted">
             {{ formatOrderDate(listItem.order.createdAt) }} · {{ formatCurrency(calculateTotal(listItem.order)) }}
+            <template v-if="listItem.order.payment">· {{ describePayment(listItem.order.payment) }}</template>
           </span>
         </RouterLink>
 

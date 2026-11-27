@@ -20,6 +20,9 @@ export function isValidPhone(value: string): boolean {
   return [10, 11].includes(onlyDigits(value).length)
 }
 
-export function buildPhoneWhatsappUrl(phone: string): string {
-  return `https://wa.me/${brazilCountryCode}${onlyDigits(phone)}`
+export function buildPhoneWhatsappUrl(phone: string, message = ''): string {
+  const phoneDigits = onlyDigits(phone)
+  const recipient = phoneDigits ? `${brazilCountryCode}${phoneDigits}` : ''
+  const query = message ? `?text=${encodeURIComponent(message)}` : ''
+  return `https://wa.me/${recipient}${query}`
 }

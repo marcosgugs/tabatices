@@ -11,8 +11,14 @@ import { publicAsset } from '@/composables/usePublicAsset'
 import { generateOrderCode } from '@/composables/useWhatsappCheckout'
 import { calculateSubtotal } from '@/composables/useOrderSummary'
 import { parseOrderMessage, type ParsedOrderMessage } from '@/composables/useOrderMessageParser'
+import { calculateChargedTotal, describePaymentAdjustment } from '@/composables/usePayment'
+import { formatCpf } from '@/composables/useCpf'
+import { buildPhoneWhatsappUrl } from '@/composables/usePhone'
+import { buildCustomerMessage, customerMessageOptions, findMessageKindForStatus } from '@/composables/useCustomerMessages'
 import SegmentedControl from '@/components/SegmentedControl.vue'
 import QuantityStepper from '@/components/QuantityStepper.vue'
+import PaymentMethodPicker from '@/components/PaymentMethodPicker.vue'
+import IconWhatsapp from '@/components/IconWhatsapp.vue'
 import type { CustomerDraft, PanelOrderDraft } from '@/types/panel'
 
 const orderCodePattern = /^[A-Z0-9-]{3,20}$/
@@ -35,8 +41,12 @@ const draft = reactive<PanelOrderDraft>({
   status: editedOrder?.status ?? 'awaiting_payment',
   items: editedOrder?.items.map((item) => ({ ...item })) ?? [],
   shippingFee: editedOrder?.shippingFee ?? 0,
+  payment: editedOrder?.payment ? { ...editedOrder.payment } : null,
+  trackingCode: editedOrder?.trackingCode ?? '',
   notes: editedOrder?.notes ?? '',
 })
+
+const selectedMessageKind = ref(findMessageKindForStatus(draft.status))
 
 const isPastingMessage = ref(!isEditing && !preselectedCustomerId)
 const orderMessage = ref('')
@@ -65,7 +75,22 @@ const normalizedCode = computed(() => draft.code.trim().toUpperCase())
 const shippingFeeValue = computed(() => Number(draft.shippingFee) || 0)
 const subtotal = computed(() => calculateSubtotal(draft.items))
 const total = computed(() => subtotal.value + shippingFeeValue.value)
+const paymentBase = computed(() => ({ subtotal: subtotal.value, shippingFee: shippingFeeValue.value }))
+const chargedTotal = computed(() => calculateChargedTotal(paymentBase.value, draft.payment))
+const paymentAdjustment = computed(() => describePaymentAdjustment(paymentBase.value, draft.payment))
 const pendingNewCustomer = computed(() => (draft.customerId ? null : newCustomer.value))
+const hasPendingCustomerDetails = computed(() => Boolean(pendingNewCustomer.value?.address || pendingNewCustomer.value?.cpf))
+const selectedCustomer = computed(() => customersStore.findCustomer(draft.customerId))
+const customerWhatsapp = computed(() => selectedCustomer.value?.whatsapp ?? '')
+
+const customerMessage = computed(() =>
+  buildCustomerMessage(selectedMessageKind.value, {
+    customerName: selectedCustomer.value?.name ?? pendingNewCustomer.value?.name ?? '',
+    order: draft,
+  }),
+)
+
+const customerMessageUrl = computed(() => buildPhoneWhatsappUrl(customerWhatsapp.value, customerMessage.value))
 
 const duplicateOrder = computed(() => {
   const existingOrder = panelOrdersStore.findOrderByCode(normalizedCode.value)
@@ -75,13 +100,18 @@ const duplicateOrder = computed(() => {
 const importWarnings = computed(() => {
   if (!importedMessage.value) return []
 
-  const { code, items, shippingFee, total: messageTotal } = importedMessage.value
+  const { code, items, shippingFee, payment, customerCpf, total: messageTotal } = importedMessage.value
   const unknownItemNames = draft.items.filter((item) => !item.slug).map((item) => item.name)
+  const registeredCpf = selectedCustomer.value?.cpf
   const warnings: string[] = []
 
   if (!code) warnings.push('Não achei o número do pedido na mensagem, então gerei um novo.')
   if (items.length === 0) warnings.push('Não achei os itens na mensagem.')
   if (shippingFee === null) warnings.push('Não achei o frete na mensagem.')
+  if (!payment) warnings.push('Não achei a forma de pagamento na mensagem.')
+  if (customerCpf && registeredCpf && customerCpf !== registeredCpf) {
+    warnings.push(`O CPF da mensagem (${formatCpf(customerCpf)}) é diferente do que está no cadastro do cliente.`)
+  }
   if (unknownItemNames.length) {
     warnings.push(`Fora do catálogo: ${unknownItemNames.join(', ')}. Entrou com o nome e o preço da mensagem.`)
   }
@@ -120,6 +150,13 @@ watch(
   { immediate: true },
 )
 
+watch(
+  () => draft.status,
+  (status) => {
+    selectedMessageKind.value = findMessageKindForStatus(status)
+  },
+)
+
 watch(isPastingMessage, async (isPasting) => {
   if (!isPasting) return
   await nextTick()
@@ -143,12 +180,13 @@ function fillFromMessage(): void {
     customerId: matchedCustomer?.id ?? '',
     items: parsedMessage.items,
     shippingFee: parsedMessage.shippingFee ?? 0,
+    payment: parsedMessage.payment,
     notes: parsedMessage.shippingLabel ?? '',
   })
 
   newCustomer.value =
     !matchedCustomer && parsedMessage.customerName
-      ? { name: parsedMessage.customerName, whatsapp: '', address: parsedMessage.address, notes: '' }
+      ? { name: parsedMessage.customerName, whatsapp: '', cpf: parsedMessage.customerCpf ?? '', address: parsedMessage.address, notes: '' }
       : null
 
   importedMessage.value = parsedMessage
@@ -192,6 +230,15 @@ function removeItem(id: string): void {
   draft.items = draft.items.filter((item) => item.id !== id)
 }
 
+async function completeCustomerCpf(): Promise<void> {
+  const customer = selectedCustomer.value
+  const importedCpf = importedMessage.value?.customerCpf
+  if (!customer || customer.cpf || !importedCpf) return
+
+  const { id, createdAt, ...customerDraft } = customer
+  await customersStore.updateCustomer(id, { ...customerDraft, cpf: importedCpf })
+}
+
 async function save(): Promise<void> {
   if (pendingRequirement.value || isSaving.value) return
 
@@ -205,10 +252,13 @@ async function save(): Promise<void> {
       newCustomer.value = null
     }
 
+    await completeCustomerCpf()
+
     const orderDraft: PanelOrderDraft = {
       ...draft,
       code: normalizedCode.value,
       shippingFee: shippingFeeValue.value,
+      trackingCode: draft.trackingCode.trim(),
       notes: draft.notes.trim(),
     }
 
@@ -316,7 +366,7 @@ async function deleteOrder(): Promise<void> {
               </div>
               <p v-if="pendingNewCustomer" class="mt-3 rounded-2xl border border-dashed border-forest/30 bg-forest/[0.04] px-4 py-3 text-sm text-ink">
                 Ainda não há cadastro de <span class="font-semibold">{{ pendingNewCustomer.name }}</span>. Ele é criado ao salvar o
-                pedido<template v-if="pendingNewCustomer.address">, com o endereço da mensagem</template>.
+                pedido<template v-if="hasPendingCustomerDetails">, com os dados da mensagem</template>.
               </p>
               <select id="order-customer" v-model="draft.customerId" class="field mt-3">
                 <option value="" disabled>{{ newCustomer ? 'Ou escolha um cliente cadastrado' : 'Escolha o cliente' }}</option>
@@ -403,9 +453,49 @@ async function deleteOrder(): Promise<void> {
               id="order-notes"
               v-model="draft.notes"
               rows="3"
-              placeholder="Forma de entrega, rastreio, combinados…"
+              placeholder="Forma de entrega, combinados…"
               class="field mt-3 resize-y"
             ></textarea>
+          </div>
+
+          <div>
+            <label for="order-tracking-code" class="text-[15px] font-semibold text-ink">Código de rastreio</label>
+            <input
+              id="order-tracking-code"
+              v-model="draft.trackingCode"
+              type="text"
+              autocomplete="off"
+              spellcheck="false"
+              maxlength="60"
+              placeholder="Preencha quando enviar o pedido"
+              class="field mt-3"
+            />
+          </div>
+
+          <div>
+            <p id="customer-message-label" class="text-[15px] font-semibold text-ink">Mensagem para o cliente</p>
+            <div role="radiogroup" aria-labelledby="customer-message-label" class="mt-3 flex flex-wrap gap-2">
+              <button
+                v-for="messageOption in customerMessageOptions"
+                :key="messageOption.kind"
+                type="button"
+                role="radio"
+                :aria-checked="selectedMessageKind === messageOption.kind"
+                class="rounded-full border px-4 py-2 text-[14px] font-medium transition duration-300 ease-apple"
+                :class="selectedMessageKind === messageOption.kind ? 'border-forest bg-forest/[0.04] text-ink' : 'border-line text-ink-muted hover:border-forest/30 hover:text-ink'"
+                @click="selectedMessageKind = messageOption.kind"
+              >
+                {{ messageOption.label }}
+              </button>
+            </div>
+            <p class="mt-3 rounded-[28px] border border-line bg-white/60 p-5 text-[15px] leading-relaxed whitespace-pre-line text-ink">{{ customerMessage }}</p>
+            <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+              <a :href="customerMessageUrl" target="_blank" rel="noopener noreferrer" class="button-primary">
+                <IconWhatsapp class="size-5" />
+                Enviar no WhatsApp
+              </a>
+              <p v-if="!customerWhatsapp" class="text-sm text-ink-muted">Cliente sem WhatsApp no cadastro: você escolhe o contato ao abrir.</p>
+            </div>
           </div>
         </div>
 
@@ -422,6 +512,11 @@ async function deleteOrder(): Promise<void> {
               class="field mt-3"
             />
 
+            <fieldset class="mt-6">
+              <legend class="text-[15px] font-semibold text-ink">Pagamento</legend>
+              <PaymentMethodPicker v-model="draft.payment" :subtotal="subtotal" :shipping-fee="shippingFeeValue" class="mt-3" />
+            </fieldset>
+
             <dl class="mt-8 space-y-3 border-t border-line pt-6 text-[15px]">
               <div class="flex justify-between">
                 <dt class="text-ink-muted">Itens</dt>
@@ -431,9 +526,13 @@ async function deleteOrder(): Promise<void> {
                 <dt class="text-ink-muted">Frete</dt>
                 <dd class="text-ink">{{ formatCurrency(shippingFeeValue) }}</dd>
               </div>
+              <div v-if="paymentAdjustment" class="flex justify-between">
+                <dt class="text-ink-muted">{{ paymentAdjustment.label }}</dt>
+                <dd :class="paymentAdjustment.amount < 0 ? 'text-terracotta' : 'text-ink'">{{ formatCurrency(paymentAdjustment.amount) }}</dd>
+              </div>
               <div class="flex justify-between pt-3 text-lg font-semibold">
                 <dt class="text-ink">Total</dt>
-                <dd class="text-ink">{{ formatCurrency(total) }}</dd>
+                <dd class="text-ink">{{ formatCurrency(chargedTotal) }}</dd>
               </div>
             </dl>
 

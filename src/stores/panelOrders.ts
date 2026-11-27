@@ -2,13 +2,20 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import type { PostgrestError } from '@supabase/supabase-js'
 import { useSupabase } from '@/composables/useSupabase'
+import type { Payment } from '@/types/cart'
 import type { Database } from '@/types/database'
 import type { OrderStatus, PanelOrder, PanelOrderDraft } from '@/types/panel'
 
 type OrderTable = Database['public']['Tables']['orders']
 
-const orderColumns = 'id, code, customer_id, status, items, shipping_fee, notes, created_at'
+const orderColumns = 'id, code, customer_id, status, items, shipping_fee, payment_method, installment_count, tracking_code, notes, created_at'
 const uniqueViolationCode = '23505'
+
+function toPayment(row: OrderTable['Row']): Payment | null {
+  if (row.payment_method === 'card' && row.installment_count) return { method: 'card', installmentCount: row.installment_count }
+  if (row.payment_method === 'pix') return { method: 'pix' }
+  return null
+}
 
 function toPanelOrder(row: OrderTable['Row']): PanelOrder {
   return {
@@ -18,6 +25,8 @@ function toPanelOrder(row: OrderTable['Row']): PanelOrder {
     status: row.status,
     items: row.items,
     shippingFee: row.shipping_fee,
+    payment: toPayment(row),
+    trackingCode: row.tracking_code,
     notes: row.notes,
     createdAt: row.created_at,
   }
@@ -30,6 +39,9 @@ function toOrderInsert(draft: PanelOrderDraft): OrderTable['Insert'] {
     status: draft.status,
     items: draft.items,
     shipping_fee: draft.shippingFee,
+    payment_method: draft.payment?.method ?? null,
+    installment_count: draft.payment?.method === 'card' ? draft.payment.installmentCount : null,
+    tracking_code: draft.trackingCode,
     notes: draft.notes,
   }
 }

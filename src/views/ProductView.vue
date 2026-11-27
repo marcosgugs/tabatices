@@ -6,8 +6,10 @@ import { formatCurrency } from '@/composables/useCurrency'
 import { publicAsset } from '@/composables/usePublicAsset'
 import { storeConfig } from '@/config/store'
 import { buildWhatsappUrl } from '@/composables/useWhatsappCheckout'
+import { applyPixDiscount } from '@/composables/usePayment'
 import { useCartStore } from '@/stores/cart'
 import SegmentedControl from '@/components/SegmentedControl.vue'
+import CardInstallmentList from '@/components/CardInstallmentList.vue'
 import QuantityStepper from '@/components/QuantityStepper.vue'
 import ProductCard from '@/components/ProductCard.vue'
 import IconWhatsapp from '@/components/IconWhatsapp.vue'
@@ -105,22 +107,9 @@ const unitPrice = computed(() => {
   return product.value.price + (selectedPaperOption.value?.priceDelta ?? 0)
 })
 
-const pixPrice = computed(() => unitPrice.value * (1 - storeConfig.pixDiscountPercent / 100))
+const pixPrice = computed(() => applyPixDiscount(unitPrice.value))
 
 const isPaymentOptionsOpen = ref(false)
-
-function roundUpToCents(amount: number): number {
-  return Math.ceil(Number((amount * 100).toFixed(4))) / 100
-}
-
-const cardInstallments = computed(() =>
-  storeConfig.customerCardFeesPercentByInstallmentCount.map((feePercent, feeIndex) => {
-    const installmentCount = feeIndex + 1
-    const total = roundUpToCents(unitPrice.value / (1 - feePercent / 100))
-
-    return { installmentCount, installmentValue: total / installmentCount, total, hasFee: feePercent > 0 }
-  }),
-)
 
 const priceInquiryUrl = computed(() => {
   if (!product.value) return ''
@@ -279,16 +268,7 @@ function addToCart(): void {
           </button>
           <div v-show="isPaymentOptionsOpen" id="formas-de-pagamento" class="mt-4 max-w-sm rounded-2xl bg-white/70 p-5">
             <p class="text-[15px] font-semibold text-ink">Cartão de crédito</p>
-            <ul class="mt-3 space-y-2 text-sm text-ink-muted">
-              <li
-                v-for="installment in cardInstallments"
-                :key="installment.installmentCount"
-                class="flex justify-between gap-4"
-              >
-                <span>{{ installment.installmentCount }}x de {{ formatCurrency(installment.installmentValue) }}</span>
-                <span>{{ installment.hasFee ? `total ${formatCurrency(installment.total)}` : 'sem juros' }}</span>
-              </li>
-            </ul>
+            <CardInstallmentList :amount="unitPrice" class="mt-3" />
           </div>
         </div>
 

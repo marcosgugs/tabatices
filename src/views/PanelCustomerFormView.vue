@@ -6,6 +6,7 @@ import { useCustomersStore } from '@/stores/customers'
 import { usePanelOrdersStore } from '@/stores/panelOrders'
 import { formatCep, onlyDigits, useDeliveryLookup } from '@/composables/useDeliveryLookup'
 import { formatPhone, isValidPhone } from '@/composables/usePhone'
+import { formatCpf, isValidCpf } from '@/composables/useCpf'
 import { formatCurrency } from '@/composables/useCurrency'
 import { calculateTotal, formatOrderDate } from '@/composables/useOrderSummary'
 import OrderStatusBadge from '@/components/OrderStatusBadge.vue'
@@ -31,6 +32,7 @@ const backLink: { to: RouteLocationRaw; label: string } = returnsToNewOrder
 
 const name = ref(editedCustomer?.name ?? '')
 const whatsapp = ref(formatPhone(editedCustomer?.whatsapp ?? ''))
+const cpf = ref(formatCpf(editedCustomer?.cpf ?? ''))
 const notes = ref(editedCustomer?.notes ?? '')
 const isSaving = ref(false)
 const saveErrorMessage = ref('')
@@ -61,6 +63,7 @@ const deletionBlocker = computed(() => {
 const pendingRequirement = computed(() => {
   if (name.value.trim().length < 2) return 'Preencha o nome do cliente.'
   if (whatsapp.value && !isValidPhone(whatsapp.value)) return 'Confira o WhatsApp com DDD.'
+  if (cpf.value && !isValidCpf(cpf.value)) return 'Confira o CPF.'
   return ''
 })
 
@@ -74,6 +77,10 @@ watch(foundAddress, (found) => {
 
 function handleWhatsappInput(event: Event): void {
   whatsapp.value = formatPhone((event.target as HTMLInputElement).value)
+}
+
+function handleCpfInput(event: Event): void {
+  cpf.value = formatCpf((event.target as HTMLInputElement).value)
 }
 
 function handleCepInput(event: Event): void {
@@ -104,6 +111,7 @@ async function save(): Promise<void> {
   const customerDraft: CustomerDraft = {
     name: name.value.trim(),
     whatsapp: onlyDigits(whatsapp.value),
+    cpf: onlyDigits(cpf.value),
     address: buildAddress(),
     notes: notes.value.trim(),
   }
@@ -171,6 +179,21 @@ async function deleteCustomer(): Promise<void> {
               placeholder="(11) 91234-5678"
               class="field mt-3"
               @input="handleWhatsappInput"
+            />
+          </div>
+
+          <div>
+            <label for="customer-cpf" class="text-[15px] font-semibold text-ink">CPF</label>
+            <input
+              id="customer-cpf"
+              :value="cpf"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              maxlength="14"
+              placeholder="000.000.000-00"
+              class="field mt-3"
+              @input="handleCpfInput"
             />
           </div>
         </div>

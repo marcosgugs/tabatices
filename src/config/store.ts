@@ -6,6 +6,7 @@ export const storeConfig = {
   tiktokHandle: 'tabatices.art',
   pixDiscountPercent: 5,
   customerCardFeesPercentByInstallmentCount: [0, 6.09, 7.01, 7.91, 8.8],
+  extraProductionDays: 1,
   shippingQuoteUrl: 'https://tabatices-frete.tabata-91e.workers.dev/quote',
   supabase: {
     url: 'https://ulfstxohfdteqkyreuyd.supabase.co',

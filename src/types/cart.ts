@@ -16,6 +16,10 @@ export interface ShippingOption {
   deliveryDays: number | null
 }
 
+export type Payment = { method: 'pix' } | { method: 'card'; installmentCount: number }
+
+export type PaymentMethod = Payment['method']
+
 export interface ShippingAddress {
   cep: string
   street: string

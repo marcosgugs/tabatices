@@ -1,13 +1,16 @@
 import { storeConfig } from '@/config/store'
 import { formatCurrency } from '@/composables/useCurrency'
-import type { CartItem, ShippingAddress, ShippingOption } from '@/types/cart'
+import { describePaymentDetails } from '@/composables/usePayment'
+import type { CartItem, Payment, ShippingAddress, ShippingOption } from '@/types/cart'
 
 interface OrderSummary {
   customerName: string
+  customerCpf: string
   items: CartItem[]
   subtotal: number
   shipping: ShippingOption
   address: ShippingAddress | null
+  payment: Payment
 }
 
 export function describeShipping(shipping: ShippingOption): string {
@@ -35,6 +38,10 @@ export function describeAddress(address: ShippingAddress): string[] {
   return [streetLine, `${address.district} · ${address.city}/${address.state}`, `CEP ${address.cep}`]
 }
 
+function describePaymentLine(summary: OrderSummary): string {
+  return `Pagamento: ${describePaymentDetails({ subtotal: summary.subtotal, shippingFee: summary.shipping.price }, summary.payment)}`
+}
+
 export function buildOrderMessage(orderCode: string, summary: OrderSummary): string {
   const total = summary.subtotal + summary.shipping.price
   const deliveryTimeLines = summary.shipping.deliveryDays ? [`Prazo de entrega: ${describeDeliveryTime(summary.shipping.deliveryDays)}`] : []
@@ -44,6 +51,7 @@ export function buildOrderMessage(orderCode: string, summary: OrderSummary): str
     '',
     `*Pedido ${orderCode}*`,
     `Nome: ${summary.customerName.trim()}`,
+    `CPF: ${summary.customerCpf}`,
     '',
     ...summary.items.map(describeItem),
     '',
@@ -51,6 +59,7 @@ export function buildOrderMessage(orderCode: string, summary: OrderSummary): str
     `${describeShipping(summary.shipping)}: ${formatCurrency(summary.shipping.price)}`,
     ...deliveryTimeLines,
     `*Total: ${formatCurrency(total)}*`,
+    describePaymentLine(summary),
   ]
 
   if (summary.address) {

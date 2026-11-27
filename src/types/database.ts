@@ -1,10 +1,11 @@
-import type { CartItem, ShippingAddress } from '@/types/cart'
+import type { CartItem, PaymentMethod, ShippingAddress } from '@/types/cart'
 import type { OrderStatus } from '@/types/panel'
 
 type CustomerRow = {
   id: string
   name: string
   whatsapp: string
+  cpf: string
   address: ShippingAddress | null
   notes: string
   created_at: string
@@ -17,6 +18,9 @@ type OrderRow = {
   status: OrderStatus
   items: CartItem[]
   shipping_fee: number
+  payment_method: PaymentMethod | null
+  installment_count: number | null
+  tracking_code: string
   notes: string
   created_at: string
 }

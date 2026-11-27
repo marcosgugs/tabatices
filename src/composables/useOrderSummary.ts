@@ -1,3 +1,5 @@
+import { storeConfig } from '@/config/store'
+import { calculateChargedTotal } from '@/composables/usePayment'
 import type { CartItem } from '@/types/cart'
 import type { PanelOrder } from '@/types/panel'
 
@@ -7,8 +9,12 @@ export function calculateSubtotal(items: CartItem[]): number {
   return items.reduce((total, item) => total + item.unitPrice * item.quantity, 0)
 }
 
-export function calculateTotal(order: Pick<PanelOrder, 'items' | 'shippingFee'>): number {
-  return calculateSubtotal(order.items) + order.shippingFee
+export function calculateProductionDays(items: CartItem[]): number {
+  return items.reduce((total, item) => total + item.quantity, 0) + storeConfig.extraProductionDays
+}
+
+export function calculateTotal(order: Pick<PanelOrder, 'items' | 'shippingFee' | 'payment'>): number {
+  return calculateChargedTotal({ subtotal: calculateSubtotal(order.items), shippingFee: order.shippingFee }, order.payment)
 }
 
 function describeItem(item: CartItem): string {

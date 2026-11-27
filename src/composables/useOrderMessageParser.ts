@@ -1,15 +1,18 @@
 import { products } from '@/data/products'
-import { formatCep } from '@/composables/useDeliveryLookup'
+import { formatCep, onlyDigits } from '@/composables/useDeliveryLookup'
+import { isValidCpf } from '@/composables/useCpf'
 import { normalizeText } from '@/composables/useTextSearch'
-import type { CartItem, ShippingAddress } from '@/types/cart'
+import type { CartItem, Payment, ShippingAddress } from '@/types/cart'
 
 export interface ParsedOrderMessage {
   code: string | null
   customerName: string | null
+  customerCpf: string | null
   items: CartItem[]
   shippingLabel: string | null
   shippingFee: number | null
   total: number | null
+  payment: Payment | null
   address: ShippingAddress | null
 }
 
@@ -17,6 +20,9 @@ const moneyPattern = String.raw`R\$\s*([\d.]+,\d{2})`
 const whatsappCopyPrefixPattern = /^\[[^\]]*\]\s[^:]+:\s/
 const codePattern = /^Pedido\s+([A-Z0-9]+-[A-Z0-9]+)$/i
 const customerNamePattern = /^Nome:\s*(.+)$/i
+const customerCpfPattern = /^CPF:\s*([\d.\-\s]+)$/i
+const pixPaymentPattern = /^Pagamento:\s*Pix\b/i
+const cardPaymentPattern = /^Pagamento:\s*Cart[aã]o de cr[eé]dito em (\d+)\s*x/i
 const itemPattern = new RegExp(String.raw`^[•·-]?\s*(\d+)\s*x\s+(.+?)\s+[—–-]\s+${moneyPattern}$`, 'i')
 const paperPattern = /^Miolo:\s*(.*)$/i
 const shippingPattern = new RegExp(String.raw`^(Frete\b.*?):\s*${moneyPattern}$`, 'i')
@@ -77,6 +83,17 @@ function parseItems(lines: string[]): CartItem[] {
   })
 }
 
+function parseCustomerCpf(lines: string[]): string | null {
+  const cpfMatch = findFirstMatch(lines, customerCpfPattern)
+  return cpfMatch && isValidCpf(cpfMatch[1]) ? onlyDigits(cpfMatch[1]) : null
+}
+
+function parsePayment(lines: string[]): Payment | null {
+  const cardMatch = findFirstMatch(lines, cardPaymentPattern)
+  if (cardMatch) return { method: 'card', installmentCount: Number(cardMatch[1]) }
+  return findFirstMatch(lines, pixPaymentPattern) ? { method: 'pix' } : null
+}
+
 function parseAddress(lines: string[]): ShippingAddress | null {
   const headerIndex = lines.findIndex((line) => addressHeaderPattern.test(line))
   if (headerIndex === -1) return null
@@ -110,10 +127,12 @@ export function parseOrderMessage(message: string): ParsedOrderMessage | null {
   return {
     code,
     customerName: findFirstMatch(lines, customerNamePattern)?.[1].trim() ?? null,
+    customerCpf: parseCustomerCpf(lines),
     items,
     shippingLabel: shippingMatch?.[1].trim() ?? null,
     shippingFee: shippingMatch ? parseMoney(shippingMatch[2]) : null,
     total: totalMatch ? parseMoney(totalMatch[1]) : null,
+    payment: parsePayment(lines),
     address: parseAddress(lines),
   }
 }

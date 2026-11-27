@@ -3,10 +3,12 @@ import { computed, reactive, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useCartStore } from '@/stores/cart'
 import { useOrdersStore } from '@/stores/orders'
-import { storeConfig } from '@/config/store'
 import { formatCurrency } from '@/composables/useCurrency'
 import { formatCep, useDeliveryLookup } from '@/composables/useDeliveryLookup'
+import { formatCpf, isValidCpf } from '@/composables/useCpf'
+import { applyPixDiscount, calculateChargedTotal, describePaymentAdjustment } from '@/composables/usePayment'
 import { useShippingQuote } from '@/composables/useShippingQuote'
+import { calculateProductionDays } from '@/composables/useOrderSummary'
 import {
   buildOrderMessage,
   buildWhatsappUrl,
@@ -16,8 +18,9 @@ import {
 } from '@/composables/useWhatsappCheckout'
 import CartLineItem from '@/components/CartLineItem.vue'
 import IconWhatsapp from '@/components/IconWhatsapp.vue'
+import PaymentMethodPicker from '@/components/PaymentMethodPicker.vue'
 import { publicAsset } from '@/composables/usePublicAsset'
-import type { ShippingAddress } from '@/types/cart'
+import type { Payment, ShippingAddress } from '@/types/cart'
 import type { Order } from '@/types/order'
 
 interface DeliveryChoice {
@@ -35,6 +38,8 @@ const { address, isLoading, errorMessage, lookup, reset } = useDeliveryLookup()
 const { options: shippingOptions, isLoading: isQuoting, quote: quoteShipping, reset: resetShipping } = useShippingQuote()
 
 const customerName = ref('')
+const customerCpf = ref('')
+const payment = ref<Payment | null>(null)
 const cep = ref('')
 const selectedShippingId = ref<string | null>(null)
 const lastOrder = ref<Order | null>(null)
@@ -65,8 +70,17 @@ const deliveryChoices = computed<DeliveryChoice[]>(() => {
 
 const selectedShipping = computed(() => shippingOptions.value.find((option) => option.id === selectedShippingId.value) ?? null)
 const deliveryFee = computed(() => selectedShipping.value?.price ?? 0)
-const total = computed(() => subtotal.value + deliveryFee.value)
-const pixTotal = computed(() => subtotal.value * (1 - storeConfig.pixDiscountPercent / 100) + deliveryFee.value)
+const pixTotal = computed(() => applyPixDiscount(subtotal.value) + deliveryFee.value)
+const productionDays = computed(() => calculateProductionDays(items.value))
+const paymentBase = computed(() => ({ subtotal: subtotal.value, shippingFee: deliveryFee.value }))
+const chargedTotal = computed(() => calculateChargedTotal(paymentBase.value, payment.value))
+const paymentAdjustment = computed(() => describePaymentAdjustment(paymentBase.value, payment.value))
+
+const installmentSummary = computed(() => {
+  if (payment.value?.method !== 'card') return ''
+  const { installmentCount } = payment.value
+  return `em ${installmentCount}x de ${formatCurrency(chargedTotal.value / installmentCount)}`
+})
 const requiresAddress = computed(() => selectedShipping.value !== null)
 
 const isAddressComplete = computed(
@@ -77,9 +91,11 @@ const isAddressComplete = computed(
 
 const pendingRequirement = computed(() => {
   if (customerName.value.trim().length < 2) return 'Preencha seu nome.'
+  if (!isValidCpf(customerCpf.value)) return 'Preencha um CPF válido.'
   if (isQuoting.value) return 'Calculando o frete…'
   if (!selectedShipping.value) return 'Informe seu CEP e escolha a entrega.'
   if (!isAddressComplete.value) return 'Complete o endereço de entrega.'
+  if (!payment.value) return 'Escolha a forma de pagamento.'
   return ''
 })
 
@@ -114,6 +130,10 @@ watch(address, (foundAddress) => {
   })
 })
 
+function handleCpfInput(event: Event): void {
+  customerCpf.value = formatCpf((event.target as HTMLInputElement).value)
+}
+
 function handleCepInput(event: Event): void {
   cep.value = formatCep((event.target as HTMLInputElement).value)
   if (address.value) reset()
@@ -134,15 +154,17 @@ function describeOrderItems(order: Order): string {
 }
 
 function checkout(): void {
-  if (!canCheckout.value || !selectedShipping.value) return
+  if (!canCheckout.value || !selectedShipping.value || !payment.value) return
 
   const orderCode = generateOrderCode()
   const message = buildOrderMessage(orderCode, {
     customerName: customerName.value,
+    customerCpf: customerCpf.value,
     items: items.value,
     subtotal: subtotal.value,
     shipping: selectedShipping.value,
     address: requiresAddress.value ? { ...shippingAddress } : null,
+    payment: payment.value,
   })
 
   const order: Order = {
@@ -150,7 +172,7 @@ function checkout(): void {
     createdAt: new Date().toISOString(),
     items: items.value.map((item) => ({ ...item })),
     deliveryLabel: describeShipping(selectedShipping.value),
-    total: total.value,
+    total: chargedTotal.value,
     message,
   }
 
@@ -196,6 +218,45 @@ function checkout(): void {
           <div>
             <label for="customer-name" class="text-[15px] font-semibold text-ink">Seu nome</label>
             <input id="customer-name" v-model="customerName" type="text" autocomplete="name" placeholder="Como podemos te chamar?" class="field mt-3" />
+          </div>
+
+          <div class="mt-6">
+            <div class="relative flex items-center gap-1.5">
+              <label for="customer-cpf" class="text-[15px] font-semibold text-ink">CPF</label>
+              <span class="group/cpf-hint inline-flex">
+                <button
+                  type="button"
+                  aria-label="Por que pedimos o CPF?"
+                  aria-describedby="customer-cpf-hint"
+                  class="flex size-5 items-center justify-center rounded-full text-ink-muted transition-colors hover:text-forest"
+                >
+                  <svg viewBox="0 0 24 24" class="size-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 11v5" stroke-linecap="round" />
+                    <path d="M12 7.5h.01" stroke-linecap="round" stroke-width="2.5" />
+                  </svg>
+                </button>
+                <span
+                  id="customer-cpf-hint"
+                  role="tooltip"
+                  class="pointer-events-none invisible absolute bottom-full left-0 z-10 mb-2 w-64 max-w-full rounded-2xl bg-forest px-4 py-3 text-[13px] leading-snug text-cream opacity-0 shadow-[0_12px_30px_-12px_rgba(31,38,32,0.5)] transition duration-300 ease-apple group-focus-within/cpf-hint:visible group-focus-within/cpf-hint:opacity-100 group-hover/cpf-hint:visible group-hover/cpf-hint:opacity-100"
+                >
+                  O CPF é obrigatório para o envio: as transportadoras exigem o documento de quem recebe o pacote.
+                </span>
+              </span>
+            </div>
+            <input
+              id="customer-cpf"
+              :value="customerCpf"
+              type="text"
+              inputmode="numeric"
+              autocomplete="off"
+              placeholder="000.000.000-00"
+              maxlength="14"
+              aria-describedby="customer-cpf-hint"
+              class="field mt-3"
+              @input="handleCpfInput"
+            />
           </div>
 
           <form class="mt-6" @submit.prevent="submitCep">
@@ -269,6 +330,14 @@ function checkout(): void {
             </div>
           </fieldset>
 
+          <fieldset class="mt-6">
+            <legend class="text-[15px] font-semibold text-ink">Pagamento</legend>
+            <PaymentMethodPicker v-model="payment" :subtotal="subtotal" :shipping-fee="deliveryFee" class="mt-3" />
+            <p class="mt-3 px-1 text-sm leading-relaxed text-ink-muted">
+              A produção começa após a confirmação do pagamento e leva {{ productionDays }} dias úteis.
+            </p>
+          </fieldset>
+
           <dl class="mt-8 space-y-3 border-t border-line pt-6 text-[15px]">
             <div class="flex justify-between">
               <dt class="text-ink-muted">Subtotal ({{ itemCount }} {{ itemCount === 1 ? 'item' : 'itens' }})</dt>
@@ -280,11 +349,16 @@ function checkout(): void {
                 {{ selectedShipping ? formatCurrency(deliveryFee) : '—' }}
               </dd>
             </div>
+            <div v-if="paymentAdjustment" class="flex justify-between">
+              <dt class="text-ink-muted">{{ paymentAdjustment.label }}</dt>
+              <dd :class="paymentAdjustment.amount < 0 ? 'text-terracotta' : 'text-ink'">{{ formatCurrency(paymentAdjustment.amount) }}</dd>
+            </div>
             <div class="flex justify-between pt-3 text-lg font-semibold">
               <dt class="text-ink">Total</dt>
-              <dd class="text-ink">{{ formatCurrency(total) }}</dd>
+              <dd class="text-ink">{{ formatCurrency(chargedTotal) }}</dd>
             </div>
-            <p class="text-right text-sm text-terracotta">{{ formatCurrency(pixTotal) }} no Pix</p>
+            <p v-if="installmentSummary" class="text-right text-sm text-ink-muted">{{ installmentSummary }}</p>
+            <p v-else-if="!payment" class="text-right text-sm text-terracotta">{{ formatCurrency(pixTotal) }} no Pix</p>
           </dl>
 
           <button type="button" class="button-primary mt-8 h-13 w-full text-base" :disabled="!canCheckout" @click="checkout">
@@ -293,10 +367,6 @@ function checkout(): void {
           </button>
           <p v-if="pendingRequirement" class="mt-3 text-center text-sm text-ink-muted">{{ pendingRequirement }}</p>
         </div>
-
-        <p class="mt-5 px-2 text-sm leading-relaxed text-ink-muted">
-          Pagamento por Pix ({{ storeConfig.pixDiscountPercent }}% off) ou cartão. A produção começa após a confirmação do pagamento.
-        </p>
       </aside>
     </div>
 

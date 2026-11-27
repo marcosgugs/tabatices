@@ -7,7 +7,7 @@ import type { Customer, CustomerDraft } from '@/types/panel'
 
 type CustomerRow = Database['public']['Tables']['customers']['Row']
 
-const customerColumns = 'id, name, whatsapp, address, notes, created_at'
+const customerColumns = 'id, name, whatsapp, cpf, address, notes, created_at'
 const saveErrorMessage = 'Não foi possível salvar o cliente. Tente de novo.'
 const foreignKeyViolationCode = '23503'
 
@@ -16,6 +16,7 @@ function toCustomer(row: CustomerRow): Customer {
     id: row.id,
     name: row.name,
     whatsapp: row.whatsapp,
+    cpf: row.cpf,
     address: row.address,
     notes: row.notes,
     createdAt: row.created_at,

@@ -3,7 +3,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useCartStore } from '@/stores/cart'
-import { storeConfig } from '@/config/store'
+import { applyPixDiscount } from '@/composables/usePayment'
 import { formatCurrency } from '@/composables/useCurrency'
 import CartLineItem from '@/components/CartLineItem.vue'
 
@@ -14,7 +14,7 @@ const { items, itemCount, subtotal, isDrawerOpen } = storeToRefs(cartStore)
 const closeButton = ref<HTMLButtonElement | null>(null)
 let previouslyFocusedElement: HTMLElement | null = null
 
-const pixSubtotal = computed(() => subtotal.value * (1 - storeConfig.pixDiscountPercent / 100))
+const pixSubtotal = computed(() => applyPixDiscount(subtotal.value))
 
 function handleKeydown(event: KeyboardEvent): void {
   if (event.key === 'Escape') cartStore.closeDrawer()
