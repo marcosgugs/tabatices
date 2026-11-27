@@ -1,6 +1,7 @@
 import { onlyDigits } from '@/composables/useDeliveryLookup'
 
 const brazilCountryCode = '55'
+const whatsappSendUrl = 'https://api.whatsapp.com/send'
 const maxPhoneDigits = 11
 const areaCodeLength = 2
 
@@ -20,9 +21,16 @@ export function isValidPhone(value: string): boolean {
   return [10, 11].includes(onlyDigits(value).length)
 }
 
+export function buildWhatsappSendUrl(recipient: string, message = ''): string {
+  const params = new URLSearchParams()
+  if (recipient) params.set('phone', recipient)
+  if (message) params.set('text', message)
+  const query = params.toString()
+  return query ? `${whatsappSendUrl}?${query}` : whatsappSendUrl
+}
+
 export function buildPhoneWhatsappUrl(phone: string, message = ''): string {
   const phoneDigits = onlyDigits(phone)
   const recipient = phoneDigits ? `${brazilCountryCode}${phoneDigits}` : ''
-  const query = message ? `?text=${encodeURIComponent(message)}` : ''
-  return `https://wa.me/${recipient}${query}`
+  return buildWhatsappSendUrl(recipient, message)
 }

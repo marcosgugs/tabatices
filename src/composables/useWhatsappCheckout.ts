@@ -1,6 +1,7 @@
 import { storeConfig } from '@/config/store'
 import { formatCurrency } from '@/composables/useCurrency'
 import { describePaymentDetails } from '@/composables/usePayment'
+import { buildWhatsappSendUrl } from '@/composables/usePhone'
 import type { CartItem, Payment, ShippingAddress, ShippingOption } from '@/types/cart'
 
 interface OrderSummary {
@@ -70,5 +71,5 @@ export function buildOrderMessage(orderCode: string, summary: OrderSummary): str
 }
 
 export function buildWhatsappUrl(message: string): string {
-  return `https://wa.me/${storeConfig.whatsappNumber}?text=${encodeURIComponent(message)}`
+  return buildWhatsappSendUrl(storeConfig.whatsappNumber, message)
 }
