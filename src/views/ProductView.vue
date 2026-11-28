@@ -20,7 +20,9 @@ const router = useRouter()
 const cartStore = useCartStore()
 
 const product = computed(() => findProductBySlug(String(route.params.slug)))
-const otherProducts = computed(() => products.filter((item) => item.slug !== product.value?.slug).slice(0, 3))
+const otherProducts = computed(() =>
+  products.filter((item) => item.isListed && item.slug !== product.value?.slug).slice(0, 3),
+)
 const isNotebook = computed(() => product.value?.category === 'notebook')
 
 interface GalleryItem {

@@ -20,6 +20,7 @@ export interface Product {
   tagline: string
   description: string
   isInspiredByReference: boolean
+  isListed: boolean
   price: number | null
   image: string
   imageAlt: string

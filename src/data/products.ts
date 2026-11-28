@@ -47,6 +47,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com uma água-viva cercada por elementos botânicos, em uma composição cheia de detalhes.',
     isInspiredByReference: true,
+    isListed: true,
     price: 59.9,
     image: 'images/agua-viva.webp',
     imageAlt: 'Caderno kraft com ilustração de água-viva e bolhas sobre fundo preto, entre ramos de folhas',
@@ -63,6 +64,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com uma nave pousada na superfície da Lua, entre crateras e pedrinhas flutuando ao redor, trazendo um toque espacial cheio de detalhes.',
     isInspiredByReference: true,
+    isListed: true,
     price: 59.9,
     image: 'images/nave-na-lua.webp',
     imageAlt: 'Caderno kraft com ilustração de uma nave pousada na Lua, entre crateras e pedras flutuando',
@@ -79,6 +81,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com duas rosas e folhas em traço fino sobre um recorte preto, com pétalas soltas caindo ao redor, em uma composição delicada e cheia de detalhes.',
     isInspiredByReference: true,
+    isListed: true,
     price: 59.9,
     image: 'images/rosa.webp',
     imageAlt: 'Caderno kraft com ilustração de duas rosas com folhas e pétalas caindo sobre um recorte preto',
@@ -95,6 +98,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com um farol cercado por ondas e rochas, trazendo um toque náutico cheio de detalhes.',
     isInspiredByReference: true,
+    isListed: true,
     price: 59.9,
     image: 'images/farol.webp',
     imageAlt: 'Caderno kraft com ilustração de farol entre ondas agitadas',
@@ -111,6 +115,7 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, com um tentáculo enrolado em uma âncora entre bolhas e cordas, trazendo um toque náutico misterioso e cheio de detalhes.',
     isInspiredByReference: true,
+    isListed: true,
     price: 59.9,
     image: 'images/tentaculo.webp',
     imageAlt: 'Caderno kraft com ilustração de tentáculo enrolado em uma âncora',
@@ -127,9 +132,27 @@ export const products: Product[] = [
     description:
       'Caderno artesanal com capa kraft e ilustração feita à mão, trazendo uma girafa cheia de personalidade.',
     isInspiredByReference: true,
+    isListed: true,
     price: 59.9,
     image: 'images/girafa.webp',
     imageAlt: 'Caderno kraft com ilustração de uma girafa espiando de ponta-cabeça',
+    extraPhotos: [],
+    productionDays: 5,
+    details: defaultDetails,
+    paperOptions: defaultPaperOptions,
+  },
+  {
+    slug: 'torre-eiffel',
+    category: 'notebook',
+    name: 'Torre Eiffel',
+    tagline: 'Uma noite em Paris, traço por traço.',
+    description:
+      'Caderno artesanal com capa kraft e ilustração feita à mão, com a Torre Eiffel diante de um recorte preto, envolta por nuvens e cercada por árvores e postes de luz, em uma composição cheia de detalhes.',
+    isInspiredByReference: true,
+    isListed: false,
+    price: 59.9,
+    image: 'images/torre-eiffel.webp',
+    imageAlt: 'Ilustração da Torre Eiffel sobre um recorte escuro, envolta por nuvens, entre árvores e postes de luz',
     extraPhotos: [],
     productionDays: 5,
     details: defaultDetails,
@@ -143,6 +166,7 @@ export const products: Product[] = [
     description:
       'Árvore decorativa feita à mão, com dezenas de tsurus de origami coloridos pousados nos galhos e voando ao redor, vasinho pintado e musgo, tudo protegido por uma redoma transparente. Na cultura japonesa, o tsuru é símbolo de sorte, saúde e longevidade.',
     isInspiredByReference: false,
+    isListed: true,
     price: null,
     image: 'images/arvore-de-tsurus.webp',
     imageAlt: 'Árvore de galhos verdes com tsurus de origami coloridos, vasinho pintado e musgo dentro de uma redoma transparente',

@@ -31,7 +31,7 @@ const aboutParagraphs = [
   'Daí nasceu a Tabatices, algo como "coisas da Tabata": cadernos com a minha cara, feitos à mão, traço por traço, para enfeitar a sua rotina também.',
 ]
 
-const notebooks = products.filter((product) => product.category === 'notebook')
+const notebooks = products.filter((product) => product.isListed && product.category === 'notebook')
 
 const highlights = [
   'Feito à mão',
